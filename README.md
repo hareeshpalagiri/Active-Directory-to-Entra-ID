@@ -91,6 +91,4 @@ Interview prep?    → Section 10 → Interview Scenarios
 </div>
 ```
 
-4. Commit message:
-```
-Restore main README
+
