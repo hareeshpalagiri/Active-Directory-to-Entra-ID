@@ -1,0 +1,115 @@
+<svg width="860" height="1020" viewBox="0 0 860 1020" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif">
+
+  <!-- Background -->
+  <rect width="860" height="1020" fill="#0D1117" rx="12"/>
+
+  <!-- Title -->
+  <text x="430" y="38" text-anchor="middle" fill="#E6EDF3" font-size="18" font-weight="700">🏢 Active Directory to Microsoft Entra ID</text>
+  <text x="430" y="60" text-anchor="middle" fill="#8B949E" font-size="12">Complete Security Reference — On-Premise · Hybrid · Cloud</text>
+
+  <!-- Divider -->
+  <line x1="40" y1="74" x2="820" y2="74" stroke="#30363D" stroke-width="1"/>
+
+  <!-- ── SECTION 01 ── -->
+  <rect x="30" y="84" width="800" height="72" rx="8" fill="#1E1B4B"/>
+  <rect x="30" y="84" width="5" height="72" rx="3" fill="#7C3AED"/>
+  <text x="50" y="106" fill="#A78BFA" font-size="11" font-weight="600">SECTION 01</text>
+  <text x="50" y="124" fill="#DDD6FE" font-size="14" font-weight="700">IAM Core Concepts</text>
+  <text x="50" y="143" fill="#8B949E" font-size="11">Authentication · Authorization · SSO &amp; Federation · PAM · Zero Trust · Audit &amp; Logging</text>
+  <rect x="668" y="98" width="90" height="20" rx="10" fill="#7C3AED" opacity="0.3"/>
+  <text x="713" y="112" text-anchor="middle" fill="#A78BFA" font-size="10" font-weight="600">✅ BUILT</text>
+
+  <!-- ── SECTION 02 ── -->
+  <rect x="30" y="168" width="800" height="72" rx="8" fill="#0F172A"/>
+  <rect x="30" y="168" width="5" height="72" rx="3" fill="#2563EB"/>
+  <text x="50" y="190" fill="#60A5FA" font-size="11" font-weight="600">SECTION 02</text>
+  <text x="50" y="208" fill="#BFDBFE" font-size="14" font-weight="700">Active Directory — On-Premise</text>
+  <text x="50" y="227" fill="#8B949E" font-size="11">AD Architecture · Forest/Domain/OU · Users &amp; Groups · GPO · DNS &amp; DHCP · Sites &amp; Replication · Trusts</text>
+
+  <!-- ── SECTION 03 ── -->
+  <rect x="30" y="252" width="800" height="72" rx="8" fill="#0F172A"/>
+  <rect x="30" y="252" width="5" height="72" rx="3" fill="#0EA5E9"/>
+  <text x="50" y="274" fill="#38BDF8" font-size="11" font-weight="600">SECTION 03</text>
+  <text x="50" y="292" fill="#BAE6FD" font-size="14" font-weight="700">AD Authentication Protocols</text>
+  <text x="50" y="311" fill="#8B949E" font-size="11">Kerberos · NTLM · LDAP &amp; LDAPS · AD Certificate Services (AD CS) · RADIUS &amp; 802.1X · Smart Card</text>
+
+  <!-- ── SECTION 04 ── -->
+  <rect x="30" y="336" width="800" height="72" rx="8" fill="#0F172A"/>
+  <rect x="30" y="336" width="5" height="72" rx="3" fill="#6366F1"/>
+  <text x="50" y="358" fill="#818CF8" font-size="11" font-weight="600">SECTION 04</text>
+  <text x="50" y="376" fill="#C7D2FE" font-size="14" font-weight="700">AD Security &amp; Hardening</text>
+  <text x="50" y="395" fill="#8B949E" font-size="11">Tiered Admin Model · LAPS · Protected Users · Credential Guard · Fine-Grained Passwords · ACL Hardening · PAW</text>
+
+  <!-- ── SECTION 05 ── -->
+  <rect x="30" y="420" width="800" height="72" rx="8" fill="#1C0A0A"/>
+  <rect x="30" y="420" width="5" height="72" rx="3" fill="#DC2626"/>
+  <text x="50" y="442" fill="#F87171" font-size="11" font-weight="600">SECTION 05</text>
+  <text x="50" y="460" fill="#FECACA" font-size="14" font-weight="700">AD Attack Techniques</text>
+  <text x="50" y="479" fill="#8B949E" font-size="11">Enumeration · PtH · PtT · Kerberoasting · AS-REP Roasting · Golden Ticket · Silver Ticket · DCSync · BloodHound · ACL Abuse</text>
+  <rect x="648" y="434" width="110" height="20" rx="10" fill="#DC2626" opacity="0.3"/>
+  <text x="703" y="448" text-anchor="middle" fill="#F87171" font-size="10" font-weight="600">⚠️ ATTACK FOCUS</text>
+
+  <!-- Hybrid divider label -->
+  <line x1="40" y1="504" x2="380" y2="504" stroke="#30363D" stroke-width="1"/>
+  <text x="430" y="509" text-anchor="middle" fill="#30363D" font-size="11">☁️  CLOUD</text>
+  <line x1="480" y1="504" x2="820" y2="504" stroke="#30363D" stroke-width="1"/>
+
+  <!-- ── SECTION 06 ── -->
+  <rect x="30" y="518" width="800" height="72" rx="8" fill="#052E16"/>
+  <rect x="30" y="518" width="5" height="72" rx="3" fill="#059669"/>
+  <text x="50" y="540" fill="#34D399" font-size="11" font-weight="600">SECTION 06</text>
+  <text x="50" y="558" fill="#A7F3D0" font-size="14" font-weight="700">Azure Entra ID — Cloud</text>
+  <text x="50" y="577" fill="#8B949E" font-size="11">Entra ID Architecture · Tenants &amp; Subscriptions · Users &amp; Groups · Roles · App Registrations · Managed Identities</text>
+
+  <!-- ── SECTION 07 ── -->
+  <rect x="30" y="602" width="800" height="72" rx="8" fill="#052E16"/>
+  <rect x="30" y="602" width="5" height="72" rx="3" fill="#10B981"/>
+  <text x="50" y="624" fill="#6EE7B7" font-size="11" font-weight="600">SECTION 07</text>
+  <text x="50" y="642" fill="#D1FAE5" font-size="14" font-weight="700">Entra ID Security</text>
+  <text x="50" y="661" fill="#8B949E" font-size="11">Conditional Access · MFA &amp; Passwordless · Identity Protection · PIM · Access Reviews · SSPR · Entra ID Attacks</text>
+
+  <!-- Hybrid divider label -->
+  <line x1="40" y1="686" x2="360" y2="686" stroke="#30363D" stroke-width="1"/>
+  <text x="430" y="691" text-anchor="middle" fill="#30363D" font-size="11">🔗  HYBRID</text>
+  <line x1="500" y1="686" x2="820" y2="686" stroke="#30363D" stroke-width="1"/>
+
+  <!-- ── SECTION 08 ── -->
+  <rect x="30" y="700" width="800" height="72" rx="8" fill="#0A1628"/>
+  <rect x="30" y="700" width="5" height="72" rx="3" fill="#0284C7"/>
+  <text x="50" y="722" fill="#38BDF8" font-size="11" font-weight="600">SECTION 08</text>
+  <text x="50" y="740" fill="#BAE6FD" font-size="14" font-weight="700">Hybrid Identity</text>
+  <text x="50" y="759" fill="#8B949E" font-size="11">Entra Connect · Password Hash Sync · Pass-Through Auth · ADFS Federation · Hybrid AAD Join · Seamless SSO</text>
+
+  <!-- ── SECTION 09 ── -->
+  <rect x="30" y="784" width="800" height="72" rx="8" fill="#1C1500"/>
+  <rect x="30" y="784" width="5" height="72" rx="3" fill="#D97706"/>
+  <text x="50" y="806" fill="#FCD34D" font-size="11" font-weight="600">SECTION 09</text>
+  <text x="50" y="824" fill="#FEF3C7" font-size="14" font-weight="700">Monitoring, Logging &amp; Incident Response</text>
+  <text x="50" y="843" fill="#8B949E" font-size="11">Windows Event IDs · AD Audit Config · Defender for Identity · Microsoft Sentinel · IR Playbooks</text>
+
+  <!-- ── SECTION 10 ── -->
+  <rect x="30" y="868" width="800" height="72" rx="8" fill="#1A0A00"/>
+  <rect x="30" y="868" width="5" height="72" rx="3" fill="#EA580C"/>
+  <text x="50" y="890" fill="#FB923C" font-size="11" font-weight="600">SECTION 10</text>
+  <text x="50" y="908" fill="#FFEDD5" font-size="14" font-weight="700">Labs &amp; Real-World Scenarios</text>
+  <text x="50" y="927" fill="#8B949E" font-size="11">AD Lab Setup · GPO Lab · Kerberoasting Simulation · BloodHound · PIM Lab · Conditional Access · Interview Scenarios</text>
+
+  <!-- Stats bar -->
+  <rect x="30" y="956" width="800" height="50" rx="8" fill="#161B22"/>
+  <line x1="230" y1="966" x2="230" y2="996" stroke="#30363D" stroke-width="1"/>
+  <line x1="430" y1="966" x2="430" y2="996" stroke="#30363D" stroke-width="1"/>
+  <line x1="630" y1="966" x2="630" y2="996" stroke="#30363D" stroke-width="1"/>
+
+  <text x="130" y="976" text-anchor="middle" fill="#8B949E" font-size="10">SECTIONS</text>
+  <text x="130" y="993" text-anchor="middle" fill="#E6EDF3" font-size="16" font-weight="700">10</text>
+
+  <text x="330" y="976" text-anchor="middle" fill="#8B949E" font-size="10">SUB-TOPICS</text>
+  <text x="330" y="993" text-anchor="middle" fill="#E6EDF3" font-size="16" font-weight="700">65+</text>
+
+  <text x="530" y="976" text-anchor="middle" fill="#8B949E" font-size="10">ATTACK TECHNIQUES</text>
+  <text x="530" y="993" text-anchor="middle" fill="#E6EDF3" font-size="16" font-weight="700">30+</text>
+
+  <text x="730" y="976" text-anchor="middle" fill="#8B949E" font-size="10">INTERVIEW Q&amp;As</text>
+  <text x="730" y="993" text-anchor="middle" fill="#E6EDF3" font-size="16" font-weight="700">400+</text>
+
+</svg>
