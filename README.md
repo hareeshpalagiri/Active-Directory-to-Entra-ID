@@ -26,7 +26,9 @@ monitoring, and real-world labs. Written in simple English with real examples.
 
 ---
 
-## 📂 Sections at a Glance
+## 📂 Sections
+
+---
 
 ### 🟣 Section 01 — IAM Core Concepts
 > The foundation. Understand identity before anything else.
@@ -44,28 +46,64 @@ monitoring, and real-world labs. Written in simple English with real examples.
 ---
 
 ### 🔵 Section 02 — Active Directory (On-Premise)
-> Coming soon
+> How Windows domain environments are built and managed.
+
+| # | File | Topic | What's Inside |
+|---|------|-------|---------------|
+| 01 | [01-What-is-AD.md](./Section-02-Active-Directory/01-What-is-AD.md) | What is Active Directory | Purpose, components, FSMO roles, NTDS.dit |
+| 02 | [02-Forest-Domain-OU.md](./Section-02-Active-Directory/02-Forest-Domain-OU.md) | Forest, Domain & OU Structure | Hierarchy, Global Catalog, DN, design |
+| 03 | [03-Users-Groups-Computers.md](./Section-02-Active-Directory/03-Users-Groups-Computers.md) | Users, Groups & Computers | Group types, AGDLP, UAC flags, AdminSDHolder |
+| 04 | [04-Group-Policy-GPO.md](./Section-02-Active-Directory/04-Group-Policy-GPO.md) | Group Policy (GPO) | LSDOU, inheritance, scripts, GPO attacks |
+| 05 | [05-DNS-and-DHCP.md](./Section-02-Active-Directory/05-DNS-and-DHCP.md) | DNS & DHCP in AD | SRV records, DORA, authorisation, attacks |
+| 06 | [06-Sites-and-Replication.md](./Section-02-Active-Directory/06-Sites-and-Replication.md) | Sites, Subnets & Replication | KCC, intra vs intersite, repadmin |
+| 07 | [07-AD-Trusts.md](./Section-02-Active-Directory/07-AD-Trusts.md) | AD Trusts | Trust types, SID filtering, delegation risk |
+| 08 | [08-AD-Recycle-Bin.md](./Section-02-Active-Directory/08-AD-Recycle-Bin.md) | AD Recycle Bin & Recovery | Recycle Bin, DSRM, backup, authoritative restore |
+
+---
 
 ### 🔵 Section 03 — AD Authentication Protocols
-> Coming soon
+> How authentication actually works under the hood.
+
+| # | File | Topic | What's Inside |
+|---|------|-------|---------------|
+| 01 | [01-Kerberos.md](./Section-03-AD-Auth-Protocols/01-Kerberos.md) | Kerberos | TGT flow, SPN config, IIS/SQL/Printer, Kerberoasting, Golden Ticket |
+| 02 | [02-NTLM.md](./Section-03-AD-Auth-Protocols/02-NTLM.md) | NTLM | Challenge-response, printer config, Pass-the-Hash, NTLM Relay |
+| 03 | [03-LDAP-and-LDAPS.md](./Section-03-AD-Auth-Protocols/03-LDAP-and-LDAPS.md) | LDAP & LDAPS | VPN/Printer/vCenter config, LDAP injection, relay attacks |
+| 04 | [04-AD-CS.md](./Section-03-AD-Auth-Protocols/04-AD-CS.md) | AD Certificate Services | Two-tier PKI, SSL/LDAPS config, ESC1-ESC4, Golden Certificate |
+| 05 | [05-RADIUS-and-8021X.md](./Section-03-AD-Auth-Protocols/05-RADIUS-and-8021X.md) | RADIUS & 802.1X | Wi-Fi/VPN/Switch config, Evil Twin, 802.1X bypass |
+| 06 | [06-Smart-Card-Auth.md](./Section-03-AD-Auth-Protocols/06-Smart-Card-Auth.md) | Smart Card Auth | PKINIT flow, admin config, badge printing, WHfB |
+
+---
 
 ### 🔵 Section 04 — AD Security & Hardening
 > Coming soon
 
+---
+
 ### 🔴 Section 05 — AD Attack Techniques
 > Coming soon
+
+---
 
 ### 🟢 Section 06 — Azure Entra ID (Cloud)
 > Coming soon
 
+---
+
 ### 🟢 Section 07 — Entra ID Security
 > Coming soon
+
+---
 
 ### 🟢 Section 08 — Hybrid Identity
 > Coming soon
 
+---
+
 ### 🟡 Section 09 — Monitoring & Incident Response
 > Coming soon
+
+---
 
 ### 🟠 Section 10 — Labs & Real-World Scenarios
 > Coming soon
@@ -73,6 +111,7 @@ monitoring, and real-world labs. Written in simple English with real examples.
 ---
 
 ## 📖 How to Use This Repo
+
 ```
 Beginner?          → Start at Section 01, then Section 02
 Know AD already?   → Jump to Section 04 (hardening) or 05 (attacks)
@@ -84,11 +123,34 @@ Interview prep?    → Section 10 → Interview Scenarios
 
 ---
 
+## 🎯 Who This Is For
+
+| Role | Most Relevant Sections |
+|------|----------------------|
+| **IT Administrator** | 02, 03, 04, 06, 08 |
+| **SOC Analyst** | 01, 05, 07, 09 |
+| **Penetration Tester** | 03, 05, 07, 08 |
+| **Security Engineer** | 01, 04, 07, 09 |
+| **Cloud Engineer** | 06, 07, 08 |
+| **Interview Prep** | All sections + Section 10 |
+
+---
+
+## 📊 Coverage
+
+| Metric | Count |
+|--------|-------|
+| 📂 Sections | 10 |
+| 📄 Sub-topic files | 65+ |
+| ⚠️ Attack techniques | 30+ |
+| 🎯 Interview Q&As | 400+ |
+| 🔧 Commands & configs | 200+ |
+| 🏢 Real-world scenarios | 50+ |
+
+---
+
 <div align="center">
 
-*⭐ Star this repo if you find it useful!*
+*⭐ Star this repo if you find it useful — it helps others find it too!*
 
 </div>
-```
-
-
