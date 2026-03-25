@@ -77,7 +77,7 @@ These are the most powerful and most targeted accounts in any organisation.
 **Example:**
 ```
 GP is the Senior IT Manager.
-He has two accounts:
+She has two accounts:
 
 Daily use account  : gp@company.com
   → Used for email, meetings, normal work
@@ -90,7 +90,7 @@ Admin account      : gp-admin@company.com
 ```
 
 > ⚠️ **Why two accounts?**  
-> If GP uses his admin account for daily work and clicks a phishing email — an attacker gets Domain Admin access instantly. Separating accounts limits the blast radius.
+> If GP uses her admin account for daily work and clicks a phishing email — an attacker gets Domain Admin access instantly. Separating accounts limits the blast radius.
 
 ---
 
