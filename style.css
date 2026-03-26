@@ -147,3 +147,25 @@ body.dark section {
   background: #1e1e2f;
   color: #eee;
 }
+.collapsible {
+  cursor: pointer;
+  font-weight: 600;
+  display: block;
+  padding: 0.4rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.collapsible:hover {
+  background: #0078d7;
+  color: #fff;
+}
+
+.nested {
+  display: none;
+  margin-left: 1rem;
+}
+
+.active {
+  display: block;
+}
