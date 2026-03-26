@@ -135,3 +135,55 @@ body.dark .sidebar {
 body.dark .quiz-card {
   background: #1e1e1e;
 }
+/* MARKDOWN STYLING */
+
+#doc-content {
+  line-height: 1.7;
+}
+
+#doc-content h1, 
+#doc-content h2, 
+#doc-content h3 {
+  margin-top: 20px;
+  color: #0078d4;
+}
+
+#doc-content p {
+  margin: 10px 0;
+}
+
+#doc-content code {
+  background: #f3f2f1;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+#doc-content pre {
+  background: #1e1e1e;
+  color: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+/* TABLES */
+#doc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+#doc-content th, 
+#doc-content td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+#doc-content th {
+  background: #f3f2f1;
+}
+
+/* LIST */
+#doc-content ul {
+  margin-left: 20px;
+}
