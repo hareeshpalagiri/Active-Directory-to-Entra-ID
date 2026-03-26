@@ -11,8 +11,10 @@ const basePath = "./";
 // ================= LOAD PAGE =================
 async function loadPage(path, link) {
   try {
+    // Loading state
     content.innerHTML = "⏳ Loading...";
 
+    // Fetch markdown (relative path works for GitHub Pages)
     const res = await fetch("./" + path);
 
     if (!res.ok) {
@@ -20,28 +22,49 @@ async function loadPage(path, link) {
       return;
     }
 
+    // Convert markdown to HTML
     const text = await res.text();
     content.innerHTML = marked.parse(text);
 
-    document.getElementById("pageTitle").innerText = link.innerText;
+    // Page title update
+    if (link) {
+      document.getElementById("pageTitle").innerText = link.innerText;
 
+      links.forEach(l => l.classList.remove("active-link"));
+      link.classList.add("active-link");
+      link.classList.add("completed");
+    }
+
+    // Save & update progress
     saveProgress(path);
     updateProgress();
 
-    links.forEach(l => l.classList.remove("active-link"));
-    link.classList.add("active-link");
-    link.classList.add("completed");
-
+    // Add features
     addCopyButtons();
     loadQuiz(text);
     addDiagrams(text);
 
+    // 🔥 FIX INTERNAL MARKDOWN LINKS
+    document.querySelectorAll("#doc-content a").forEach(a => {
+      const href = a.getAttribute("href");
+
+      if (href && href.endsWith(".md")) {
+        a.onclick = (e) => {
+          e.preventDefault();
+
+          const baseFolder = path.substring(0, path.lastIndexOf("/") + 1);
+          const newPath = baseFolder + href.replace("./", "");
+
+          loadPage(newPath, null);
+        };
+      }
+    });
+
   } catch (err) {
-    content.innerHTML = "❌ Failed to load<br>" + path;
+    content.innerHTML = "❌ Failed to load content";
     console.error(err);
   }
 }
-
 // ================= PROGRESS =================
 function saveProgress(p) {
   let visited = JSON.parse(localStorage.getItem("visited") || "[]");
