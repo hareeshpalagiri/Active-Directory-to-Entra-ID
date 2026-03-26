@@ -15,26 +15,16 @@ async function loadPage(path, link) {
   try {
     content.innerHTML = "⏳ Loading...";
 
-    const rawBase = "https://raw.githubusercontent.com/hareeshpalagiri/Active-Directory-to-Entra-ID/main/";
-    const fullPath = rawBase + path;
+    // 👉 GitHub file viewer URL (NOT raw)
+    const githubView =
+      "https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/" + path;
 
-    // 🔍 SHOW EXACT PATH ON SCREEN
-    content.innerHTML = "Trying to load:<br>" + fullPath;
-
-    const res = await fetch(fullPath);
-
-    if (!res.ok) {
-      content.innerHTML = `
-        ❌ FAILED<br><br>
-        ${fullPath}<br><br>
-        👉 Copy this URL and open in browser
-      `;
-      return;
-    }
-
-    const text = await res.text();
-
-    content.innerHTML = marked.parse(text);
+    content.innerHTML = `
+      <iframe 
+        src="${githubView}" 
+        style="width:100%; height:80vh; border:none; border-radius:8px;">
+      </iframe>
+    `;
 
     if (link) {
       document.getElementById("pageTitle").innerText = link.innerText;
@@ -47,7 +37,7 @@ async function loadPage(path, link) {
     }
 
   } catch (err) {
-    content.innerHTML = "❌ Error: " + err.message;
+    content.innerHTML = "❌ Failed to load content";
   }
 }
 // ================= DIAGRAM APPEND =================
