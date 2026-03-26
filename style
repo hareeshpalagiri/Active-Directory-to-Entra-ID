@@ -1,0 +1,149 @@
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  background: #fdfdfd;
+  color: #222;
+  transition: background 0.3s, color 0.3s;
+}
+
+.sidebar {
+  width: 250px;
+  background: #1e1e2f;
+  color: #fff;
+  height: 100vh;
+  padding: 1rem;
+  position: fixed;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+.sidebar .logo {
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #00aaff;
+}
+
+.sidebar input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin: 0.6rem 0;
+}
+
+.sidebar a {
+  color: #ddd;
+  text-decoration: none;
+  font-weight: 500;
+  display: block;
+  padding: 0.4rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: #0078d7;
+  color: #fff;
+}
+
+.content {
+  margin-left: 270px;
+  padding: 2rem;
+  max-width: 900px;
+}
+
+header {
+  border-bottom: 2px solid #0078d7;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  margin: 0;
+  color: #0078d7;
+}
+
+section {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Mobile adjustments */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: #0078d7;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.2rem;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.dark-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: #0078d7;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.2rem;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+  .hamburger {
+    display: block;
+  }
+}
+
+/* Dark mode */
+body.dark {
+  background: #121212;
+  color: #eee;
+}
+
+body.dark .sidebar {
+  background: #111;
+}
+
+body.dark section {
+  background: #1e1e2f;
+  color: #eee;
+}
