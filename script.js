@@ -6,42 +6,38 @@ let currentIndex = 0;
 const allLinks = Array.from(links);
 
 // 🔥 IMPORTANT: GitHub Pages base path
-const basePath = "/Active-Directory-to-Entra-ID/";
+const basePath = "./";
 
 // ================= LOAD PAGE =================
 async function loadPage(path, link) {
   try {
     content.innerHTML = "⏳ Loading...";
 
-    const res = await fetch(basePath + path);
+    const res = await fetch("./" + path);
 
     if (!res.ok) {
-      content.innerHTML = "⚠️ Error loading content";
+      content.innerHTML = "⚠️ Error loading content<br>" + path;
       return;
     }
 
     const text = await res.text();
     content.innerHTML = marked.parse(text);
 
-    // Page title
     document.getElementById("pageTitle").innerText = link.innerText;
 
-    // Progress
     saveProgress(path);
     updateProgress();
 
-    // Highlight active
     links.forEach(l => l.classList.remove("active-link"));
     link.classList.add("active-link");
     link.classList.add("completed");
 
-    // Features
     addCopyButtons();
     loadQuiz(text);
     addDiagrams(text);
 
   } catch (err) {
-    content.innerHTML = "❌ Something went wrong";
+    content.innerHTML = "❌ Failed to load<br>" + path;
     console.error(err);
   }
 }
