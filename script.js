@@ -1,3 +1,4 @@
+// ================= ELEMENTS =================
 const links = document.querySelectorAll(".sidebar a");
 const content = document.getElementById("doc-content");
 const quizContainer = document.getElementById("quiz-container");
@@ -5,127 +6,148 @@ const quizContainer = document.getElementById("quiz-container");
 let currentIndex = 0;
 const allLinks = Array.from(links);
 
-// 🔥 IMPORTANT: GitHub Pages base path
-const basePath = "./";
+// 🔥 RAW BASE (THIS IS KEY)
+const RAW_BASE =
+  "https://raw.githubusercontent.com/hareeshpalagiri/Active-Directory-to-Entra-ID/main/";
 
 // ================= LOAD PAGE =================
 async function loadPage(path, link) {
   try {
-    // Loading state
     content.innerHTML = "⏳ Loading...";
 
-    // 🔥 GitHub RAW base (important)
-    const rawBase =
-      "https://raw.githubusercontent.com/hareeshpalagiri/Active-Directory-to-Entra-ID/main/";
+    const fullPath = RAW_BASE + path;
 
-    const fullPath = rawBase + path;
+    console.log("Trying:", fullPath);
 
-    console.log("Loading:", fullPath);
-
-    // Fetch markdown
     const res = await fetch(fullPath);
 
     if (!res.ok) {
-      content.innerHTML = "⚠️ File not found<br>" + fullPath;
+      content.innerHTML = `
+        ❌ Cannot load file<br>
+        <b>${fullPath}</b><br><br>
+        👉 Open this URL manually to verify
+      `;
       return;
     }
 
-    // Convert markdown → HTML
     const text = await res.text();
-    const html = marked.parse(text);
 
-    // Render content
-    content.innerHTML = html;
+    // ===== RENDER MARKDOWN =====
+    content.innerHTML = marked.parse(text);
 
-    // ================= DIAGRAMS (SAFE APPEND) =================
-    const diagramContainer = document.createElement("div");
-    diagramContainer.innerHTML = getDiagramHTML(text);
-    content.appendChild(diagramContainer);
-
-    // ================= TITLE + ACTIVE LINK =================
+    // ===== TITLE =====
     if (link) {
       document.getElementById("pageTitle").innerText = link.innerText;
 
-      document.querySelectorAll(".sidebar a").forEach(l =>
-        l.classList.remove("active-link")
-      );
-
+      links.forEach(l => l.classList.remove("active-link"));
       link.classList.add("active-link");
       link.classList.add("completed");
     }
 
-    // ================= PROGRESS =================
+    // ===== PROGRESS =====
     saveProgress(path);
     updateProgress();
 
-    // ================= FEATURES =================
+    // ===== FEATURES =====
     addCopyButtons();
     loadQuiz(text);
+    appendDiagrams(text);
 
-    // ================= FIX INTERNAL LINKS =================
-    document.querySelectorAll("#doc-content a").forEach(a => {
-      const href = a.getAttribute("href");
-
-      if (href && href.endsWith(".md")) {
-        a.onclick = (e) => {
-          e.preventDefault();
-
-          const baseFolder = path.substring(0, path.lastIndexOf("/") + 1);
-          const newPath = baseFolder + href.replace("./", "");
-
-          loadPage(newPath, null);
-        };
-      }
-    });
+    // ===== FIX INTERNAL LINKS =====
+    fixInternalLinks(path);
 
   } catch (err) {
-    content.innerHTML = "❌ Error loading content";
     console.error(err);
+    content.innerHTML = "❌ Critical error loading content";
   }
 }
+
+// ================= DIAGRAM APPEND =================
+function appendDiagrams(text) {
+  let html = "";
+
+  if (text.includes("Kerberos")) {
+    html += `
+      <div class="diagram-box">
+        🔐 Kerberos Flow:<br>
+        User → DC → Ticket → Service
+      </div>`;
+  }
+
+  if (text.includes("DCSync")) {
+    html += `
+      <div class="diagram-box">
+        ⚠️ DCSync:<br>
+        Attacker → DC → Hash Dump
+      </div>`;
+  }
+
+  if (html) {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    content.appendChild(div);
+  }
+}
+
+// ================= FIX INTERNAL LINKS =================
+function fixInternalLinks(currentPath) {
+  document.querySelectorAll("#doc-content a").forEach(a => {
+    const href = a.getAttribute("href");
+
+    if (href && href.endsWith(".md")) {
+      a.onclick = (e) => {
+        e.preventDefault();
+
+        const base = currentPath.substring(
+          0,
+          currentPath.lastIndexOf("/") + 1
+        );
+
+        const newPath = base + href.replace("./", "");
+
+        console.log("Navigate:", newPath);
+
+        loadPage(newPath, null);
+      };
+    }
+  });
+}
+
 // ================= PROGRESS =================
 function saveProgress(p) {
-  let visited = JSON.parse(localStorage.getItem("visited") || "[]");
+  let v = JSON.parse(localStorage.getItem("visited") || "[]");
 
-  if (!visited.includes(p)) {
-    visited.push(p);
-    localStorage.setItem("visited", JSON.stringify(visited));
+  if (!v.includes(p)) {
+    v.push(p);
+    localStorage.setItem("visited", JSON.stringify(v));
   }
 }
 
 function updateProgress() {
-  let visited = JSON.parse(localStorage.getItem("visited") || "[]");
+  let v = JSON.parse(localStorage.getItem("visited") || "[]");
 
-  let percent = (visited.length / allLinks.length) * 100;
+  let percent = (v.length / allLinks.length) * 100;
 
-  document.getElementById("progress-bar").style.width = percent + "%";
+  document.getElementById("progress-bar").style.width =
+    percent + "%";
+
   document.getElementById("progressText").innerText =
     "Progress: " + Math.round(percent) + "%";
 }
 
 // ================= QUIZ =================
 function loadQuiz(text) {
-  let question = "Which protocol is more secure?";
-  let correct = "Kerberos";
-  let wrong = "NTLM";
-
-  if (text.includes("NTLM")) {
-    question = "Why is NTLM weaker?";
-    correct = "Uses hashes";
-    wrong = "Uses tickets";
-  }
-
   quizContainer.innerHTML = `
     <div class="quiz-card">
       <h3>🧠 Quick Quiz</h3>
-      <p>${question}</p>
-      <button onclick="alert('✅ Correct!')">${correct}</button>
-      <button onclick="alert('❌ Try again')">${wrong}</button>
+      <p>Kerberos is used for?</p>
+      <button onclick="alert('✅ Correct')">Authentication</button>
+      <button onclick="alert('❌ Wrong')">Encryption only</button>
     </div>
   `;
 }
 
-// ================= COPY BUTTON =================
+// ================= COPY =================
 function addCopyButtons() {
   document.querySelectorAll("pre code").forEach(block => {
     const btn = document.createElement("button");
@@ -141,25 +163,6 @@ function addCopyButtons() {
     block.parentElement.style.position = "relative";
     block.parentElement.appendChild(btn);
   });
-}
-
-// ================= DIAGRAMS =================
-function addDiagrams(text) {
-  if (text.includes("Kerberos")) {
-    content.innerHTML += `
-      <div class="diagram-box">
-        🔐 Kerberos Flow:<br>
-        User → Domain Controller → Ticket → Service Access
-      </div>`;
-  }
-
-  if (text.includes("DCSync")) {
-    content.innerHTML += `
-      <div class="diagram-box">
-        ⚠️ DCSync Attack:<br>
-        Attacker → Domain Controller → Password Hash Dump
-      </div>`;
-  }
 }
 
 // ================= NAVIGATION =================
@@ -192,8 +195,8 @@ document.getElementById("searchBox").onkeyup = function () {
   const filter = this.value.toLowerCase();
 
   links.forEach(link => {
-    const match = link.innerText.toLowerCase().includes(filter);
-    link.parentElement.style.display = match ? "" : "none";
+    link.parentElement.style.display =
+      link.innerText.toLowerCase().includes(filter) ? "" : "none";
   });
 };
 
@@ -201,42 +204,21 @@ document.getElementById("searchBox").onkeyup = function () {
 document.querySelectorAll(".collapsible").forEach(c => {
   c.onclick = function () {
     const n = this.nextElementSibling;
-    n.style.display = n.style.display === "block" ? "none" : "block";
+    n.style.display =
+      n.style.display === "block" ? "none" : "block";
   };
 });
 
 // ================= CLICK EVENTS =================
 links.forEach((l, i) => {
-  l.onclick = e => {
+  l.onclick = (e) => {
     e.preventDefault();
     currentIndex = i;
     loadPage(l.getAttribute("href"), l);
   };
 });
 
-// ================= INITIAL LOAD =================
+// ================= START =================
 if (allLinks.length > 0) {
   allLinks[0].click();
-}
-// ================= DIAGRAM HTML HELPER =================
-function getDiagramHTML(text) {
-  let html = "";
-
-  if (text.includes("Kerberos")) {
-    html += `
-      <div class="diagram-box">
-        🔐 Kerberos Flow:<br>
-        User → Domain Controller → Ticket → Service Access
-      </div>`;
-  }
-
-  if (text.includes("DCSync")) {
-    html += `
-      <div class="diagram-box">
-        ⚠️ DCSync Attack:<br>
-        Attacker → Domain Controller → Password Hash Dump
-      </div>`;
-  }
-
-  return html;
 }
