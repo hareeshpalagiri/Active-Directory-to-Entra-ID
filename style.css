@@ -169,3 +169,23 @@ body.dark section {
 .active {
   display: block;
 }
+.sidebar a {
+  color: #ccc; /* softer gray */
+  text-decoration: none;
+  font-weight: 500;
+  display: block;
+  padding: 0.4rem;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar a:hover {
+  background: #0078d7;
+  color: #fff;
+}
+
+.sidebar a.active-link {
+  background: #0078d7;
+  color: #fff !important;
+  font-weight: 600;
+}
