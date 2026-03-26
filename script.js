@@ -13,26 +13,25 @@ async function loadPage(path, link) {
   try {
     content.innerHTML = "⏳ Loading...";
 
-    // 🔥 Dynamic base path (works everywhere)
-    const base = window.location.pathname.includes("Active-Directory-to-Entra-ID")
-      ? "/Active-Directory-to-Entra-ID/"
-      : "/";
+    // 🔥 GitHub RAW URL (THIS IS THE KEY FIX)
+    const rawBase =
+      "https://raw.githubusercontent.com/hareeshpalagiri/Active-Directory-to-Entra-ID/main/";
 
-    const fullPath = base + path;
+    const fullPath = rawBase + path;
 
-    console.log("Loading:", fullPath); // DEBUG
+    console.log("Loading RAW:", fullPath);
 
     const res = await fetch(fullPath);
 
     if (!res.ok) {
-      content.innerHTML = "⚠️ File not found:<br>" + fullPath;
+      content.innerHTML = "⚠️ File not found<br>" + fullPath;
       return;
     }
 
     const text = await res.text();
     content.innerHTML = marked.parse(text);
 
-    // Title update
+    // Title
     if (link) {
       document.getElementById("pageTitle").innerText = link.innerText;
 
@@ -50,7 +49,7 @@ async function loadPage(path, link) {
     loadQuiz(text);
     addDiagrams(text);
 
-    // 🔥 FIX INTERNAL MARKDOWN LINKS
+    // 🔥 Fix internal links
     document.querySelectorAll("#doc-content a").forEach(a => {
       const href = a.getAttribute("href");
 
