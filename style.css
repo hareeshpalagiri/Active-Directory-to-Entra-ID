@@ -1,140 +1,137 @@
 body {
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Segoe UI", Arial;
+  display: flex;
   background: #ffffff;
   color: #1f1f1f;
+  scroll-behavior: smooth;
+}
+
+/* HEADER */
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e1dfdd;
+  padding: 10px 20px;
+  z-index: 1000;
   display: flex;
+  justify-content: space-between;
 }
 
 /* SIDEBAR */
 .sidebar {
-  width: 260px;
-  background: #f3f2f1;
+  width: 270px;
   height: 100vh;
   position: fixed;
-  padding: 20px;
+  top: 60px;
   overflow-y: auto;
+  background: #f3f2f1;
+  padding: 15px;
   border-right: 1px solid #e1dfdd;
-}
-
-.logo {
-  font-size: 18px;
-  font-weight: 600;
-  color: #0078d4;
-  margin-bottom: 20px;
-}
-
-.sidebar input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 15px;
 }
 
 .sidebar a {
   display: block;
-  padding: 8px 10px;
+  padding: 6px;
   color: #323130;
   text-decoration: none;
-  border-radius: 6px;
-  transition: 0.2s;
+  border-radius: 5px;
 }
 
 .sidebar a:hover {
   background: #e5f1fb;
-  color: #0078d4;
 }
 
 .sidebar a.active-link {
   background: #0078d4;
-  color: #fff;
+  color: white;
+}
+
+.sidebar a.completed::after {
+  content: "✔";
+  float: right;
+  color: green;
 }
 
 /* CONTENT */
 .content {
-  margin-left: 270px;
-  padding: 40px;
+  margin-left: 280px;
+  margin-top: 70px;
+  padding: 30px;
   max-width: 900px;
+  animation: fadeIn 0.4s ease;
 }
 
-/* HEADER */
-h1 {
-  font-size: 34px;
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+/* PROGRESS */
+#progress-container {
+  height: 6px;
+  background: #ddd;
   margin-bottom: 10px;
 }
 
-h2 {
-  color: #0078d4;
-  margin-top: 30px;
+#progress-bar {
+  height: 6px;
+  background: #0078d4;
+  width: 0%;
+  transition: 0.3s;
 }
 
-/* CARD UI */
-.card {
-  background: #ffffff;
+/* QUIZ */
+.quiz-card {
   border: 1px solid #e1dfdd;
-  border-radius: 10px;
-  padding: 16px;
-  margin: 12px 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 8px;
+  background: #fafafa;
 }
 
-/* NAV BUTTONS */
-.top-nav, #nav-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 20px 0;
-}
-
+/* BUTTONS */
 button {
-  padding: 10px 16px;
-  border: none;
   background: #0078d4;
   color: white;
+  border: none;
+  padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: 500;
 }
 
 button:hover {
   background: #005ea6;
+  transform: scale(1.05);
 }
 
-/* DIAGRAM BOX */
-.diagram {
-  background: #f9fbfd;
+/* DIAGRAM */
+.diagram-box {
   border-left: 4px solid #0078d4;
-  padding: 15px;
-  margin: 20px 0;
-  font-family: monospace;
-  white-space: pre-line;
+  padding: 12px;
+  margin-top: 20px;
+  background: #f9fbfd;
 }
 
-/* TOGGLE BUTTON */
-.toggle-btn {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  background: #0078d4;
-  color: white;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+/* COPY BUTTON */
+.copy-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }
 
-/* MOBILE */
-@media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
+/* DARK MODE */
+body.dark {
+  background: #121212;
+  color: #e0e0e0;
+}
 
-  .sidebar.open {
-    transform: translateX(0);
-  }
+body.dark .sidebar {
+  background: #1e1e1e;
+}
 
-  .content {
-    margin-left: 0;
-    padding: 20px;
-  }
+body.dark .quiz-card {
+  background: #1e1e1e;
 }
