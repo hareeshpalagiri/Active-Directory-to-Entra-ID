@@ -1,215 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Active Directory → Entra ID</title>
+  <title>AD → Entra ID Guide</title>
 
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css">
 </head>
 
 <body>
+  <div id="app"></div>
 
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-  <div class="logo">AD → Entra ID</div>
-  <input type="text" id="searchBox" placeholder="🔍 Search topics...">
+  <script>
+    window.$docsify = {
+      name: 'AD → Entra ID Guide',
+      repo: 'https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID',
+      loadSidebar: true,
+      subMaxLevel: 2,
+      search: 'auto'
+    }
+  </script>
 
-  <ul id="navList">
-
-  <!-- 01 -->
-  <li>
-    <span class="collapsible">🧠 Identity Fundamentals</span>
-    <ul class="nested">
-      <li><a href="Section-01-IAM-Core/01-Introduction-to-IAM.md">Introduction to Identity & IAM</a></li>
-      <li><a href="Section-01-IAM-Core/02-Authentication.md">Authentication</a></li>
-      <li><a href="Section-01-IAM-Core/03-Authorization.md">Authorization</a></li>
-      <li><a href="Section-01-IAM-Core/04-SSO-and-Federation.md">SSO & Federation</a></li>
-      <li><a href="Section-01-IAM-Core/05-PAM.md">Privileged Access Management (PAM)</a></li>
-      <li><a href="Section-01-IAM-Core/06-Zero-Trust.md">Zero Trust Architecture</a></li>
-      <li><a href="Section-01-IAM-Core/07-Audit-and-Logging.md">Audit & Logging</a></li>
-    </ul>
-  </li>
-
-  <!-- 02 -->
-  <li>
-    <span class="collapsible">🏢 Active Directory (On-Prem)</span>
-    <ul class="nested">
-      <li><a href="Section-02-Active-Directory/01-What-is-AD.md">What is Active Directory?</a></li>
-      <li><a href="Section-02-Active-Directory/02-Forest-Domain-OU.md">Forest, Domain & OU</a></li>
-      <li><a href="Section-02-Active-Directory/03-Users-Groups-Computers.md">Users, Groups & Computers</a></li>
-      <li><a href="Section-02-Active-Directory/04-Group-Policy-GPO.md">Group Policy (GPO)</a></li>
-      <li><a href="Section-02-Active-Directory/05-DNS-and-DHCP.md">DNS & DHCP</a></li>
-      <li><a href="Section-02-Active-Directory/06-Sites-and-Replication.md">Sites & Replication</a></li>
-      <li><a href="Section-02-Active-Directory/07-AD-Trusts.md">AD Trust Relationships</a></li>
-      <li><a href="Section-02-Active-Directory/08-AD-Recycle-Bin.md">AD Recovery & Recycle Bin</a></li>
-    </ul>
-  </li>
-
-  <!-- 03 -->
-  <li>
-    <span class="collapsible">🔑 Authentication Protocols</span>
-    <ul class="nested">
-      <li><a href="Section-03-AD-Auth-Protocols/01-Kerberos.md">Kerberos Authentication</a></li>
-      <li><a href="Section-03-AD-Auth-Protocols/02-NTLM.md">NTLM (Legacy Authentication)</a></li>
-      <li><a href="Section-03-AD-Auth-Protocols/03-LDAP-and-LDAPS.md">LDAP & LDAPS</a></li>
-      <li><a href="Section-03-AD-Auth-Protocols/04-AD-CS.md">Active Directory Certificate Services (AD CS)</a></li>
-      <li><a href="Section-03-AD-Auth-Protocols/05-RADIUS-and-8021X.md">RADIUS & 802.1X</a></li>
-      <li><a href="Section-03-AD-Auth-Protocols/06-Smart-Card-Auth.md">Smart Card Authentication</a></li>
-    </ul>
-  </li>
-
-  <!-- 04 -->
-  <li>
-    <span class="collapsible">🛡️ AD Security & Hardening</span>
-    <ul class="nested">
-      <li><a href="Section-04-AD-Security/01-Tiered-Admin-Model.md">Tiered Admin Model</a></li>
-      <li><a href="Section-04-AD-Security/02-LAPS.md">Local Admin Password Solution (LAPS)</a></li>
-      <li><a href="Section-04-AD-Security/03-Credential-Guard.md">Credential Guard</a></li>
-      <li><a href="Section-04-AD-Security/04-Privileged-Access-Workstations.md">Privileged Access Workstations (PAW)</a></li>
-      <li><a href="Section-04-AD-Security/05-Secure-Delegation.md">Secure Delegation</a></li>
-    </ul>
-  </li>
-
-  <!-- 05 -->
-  <li>
-    <span class="collapsible">🔐 AD Attack Techniques</span>
-    <ul class="nested">
-      <li><a href="Section-05-AD-Attacks/01-Kerberoasting.md">Kerberoasting Attack</a></li>
-      <li><a href="Section-05-AD-Attacks/02-Golden-Ticket.md">Golden Ticket Attack</a></li>
-      <li><a href="Section-05-AD-Attacks/03-DCSync.md">DCSync Attack</a></li>
-      <li><a href="Section-05-AD-Attacks/04-Pass-the-Hash.md">Pass-the-Hash Attack</a></li>
-      <li><a href="Section-05-AD-Attacks/05-BloodHound.md">BloodHound Analysis</a></li>
-    </ul>
-  </li>
-
-  <!-- 06 -->
-  <li>
-    <span class="collapsible">☁️ Microsoft Entra ID</span>
-    <ul class="nested">
-      <li><a href="Section-06-Azure-Entitlement/01-Entra-Tenants.md">Entra Tenants</a></li>
-      <li><a href="Section-06-Azure-Entitlement/02-Entra-Roles.md">Entra Roles & RBAC</a></li>
-      <li><a href="Section-06-Azure-Entitlement/03-App-Registrations.md">App Registrations</a></li>
-    </ul>
-  </li>
-
-  <!-- 07 -->
-  <li>
-    <span class="collapsible">🛡️ Entra ID Security</span>
-    <ul class="nested">
-      <li><a href="Section-07-Entra-Security/01-Conditional-Access.md">Conditional Access Policies</a></li>
-      <li><a href="Section-07-Entra-Security/02-MFA.md">Multi-Factor Authentication (MFA)</a></li>
-      <li><a href="Section-07-Entra-Security/03-Identity-Protection.md">Identity Protection</a></li>
-    </ul>
-  </li>
-
-  <!-- 08 -->
-  <li>
-    <span class="collapsible">🔄 Hybrid Identity & Integration</span>
-    <ul class="nested">
-      <li><a href="Section-08-Hybrid-Identity/01-Entra-Connect.md">Entra Connect (Azure AD Connect)</a></li>
-      <li><a href="Section-08-Hybrid-Identity/02-ADFS-Federation.md">ADFS Federation</a></li>
-      <li><a href="Section-08-Hybrid-Identity/03-Seamless-SSO.md">Seamless Single Sign-On</a></li>
-    </ul>
-  </li>
-
-  <!-- 09 -->
-  <li>
-    <span class="collapsible">📊 Monitoring & Detection</span>
-    <ul class="nested">
-      <li><a href="Section-09-Monitoring/01-Event-IDs.md">Security Event IDs</a></li>
-      <li><a href="Section-09-Monitoring/02-Defender-for-Identity.md">Microsoft Defender for Identity</a></li>
-      <li><a href="Section-09-Monitoring/03-Sentinel.md">Microsoft Sentinel (SIEM)</a></li>
-    </ul>
-  </li>
-
-  <!-- 10 -->
-  <li>
-    <span class="collapsible">🌍 Labs & Real-world Scenarios</span>
-    <ul class="nested">
-      <li><a href="Section-10-Labs/01-Lab-Kerberoasting.md">Kerberoasting Lab</a></li>
-      <li><a href="Section-10-Labs/02-Lab-Conditional-Access.md">Conditional Access Lab</a></li>
-      <li><a href="Section-10-Labs/03-Lab-DCSync.md">DCSync Lab</a></li>
-      <li><a href="Section-10-Labs/04-Interview-QA.md">Interview Questions & Answers</a></li>
-      <li><a href="Section-10-Labs/05-Real-World-Scenarios.md">Real-world Attack Scenarios</a></li>
-    </ul>
-  </li>
-
-</ul>
-</aside>
-
-<button class="hamburger" id="hamburger">☰</button>
-
-<main class="content">
-  <div id="breadcrumb"></div>
-
-  <header>
-    <h1>Active Directory → Entra ID</h1>
-    <p>Identity, Security & Real-world Attacks</p>
-  </header>
-
-  <section id="doc-content">
-    <p>Select a topic from the sidebar.</p>
-  </section>
-
-  <footer>
-    <p>© 2026 Hareesh | <a href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID">GitHub</a></p>
-  </footer>
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-<script>
-const links = document.querySelectorAll('.sidebar a');
-const content = document.getElementById('doc-content');
-const searchBox = document.getElementById('searchBox');
-const sidebar = document.getElementById('sidebar');
-const hamburger = document.getElementById('hamburger');
-
-// Load markdown
-links.forEach(link => {
-  link.addEventListener('click', async (e) => {
-    e.preventDefault();
-
-    links.forEach(l => l.classList.remove('active-link'));
-    link.classList.add('active-link');
-
-    document.getElementById('breadcrumb').innerText = link.textContent;
-
-    const response = await fetch(link.getAttribute('href'));
-    const text = await response.text();
-    content.innerHTML = marked.parse(text);
-  });
-});
-
-// Search
-searchBox.addEventListener('keyup', () => {
-  const filter = searchBox.value.toLowerCase();
-  document.querySelectorAll('.sidebar a').forEach(link => {
-    link.parentElement.style.display =
-      link.textContent.toLowerCase().includes(filter) ? '' : 'none';
-  });
-});
-
-// Sidebar toggle
-hamburger.addEventListener('click', () => {
-  sidebar.classList.toggle('open');
-});
-
-// Collapsible
-document.querySelectorAll(".collapsible").forEach(c => {
-  c.addEventListener("click", function() {
-    this.classList.toggle("open");
-    const nested = this.nextElementSibling;
-    nested.style.display = nested.style.display === "block" ? "none" : "block";
-  });
-});
-
-// Open first section
-document.querySelectorAll('.nested')[0].style.display = 'block';
-document.querySelectorAll('.collapsible')[0].classList.add('open');
-</script>
-
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 </body>
 </html>
