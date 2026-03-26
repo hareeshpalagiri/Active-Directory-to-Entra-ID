@@ -43,7 +43,7 @@ From a cybersecurity perspective:
 <div align="center">
 
 ![Blueprint](./assets/blueprint.svg)  
-![Course Architecture](./assets/course-architecture.png)
+
 
 </div>
 
