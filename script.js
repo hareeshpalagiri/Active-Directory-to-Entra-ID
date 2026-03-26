@@ -11,16 +11,18 @@ const basePath = "./";
 // ================= LOAD PAGE =================
 async function loadPage(path, link) {
   try {
+    // Loading state
     content.innerHTML = "⏳ Loading...";
 
-    // 🔥 GitHub RAW URL (THIS IS THE KEY FIX)
+    // 🔥 GitHub RAW base (important)
     const rawBase =
       "https://raw.githubusercontent.com/hareeshpalagiri/Active-Directory-to-Entra-ID/main/";
 
     const fullPath = rawBase + path;
 
-    console.log("Loading RAW:", fullPath);
+    console.log("Loading:", fullPath);
 
+    // Fetch markdown
     const res = await fetch(fullPath);
 
     if (!res.ok) {
@@ -28,28 +30,39 @@ async function loadPage(path, link) {
       return;
     }
 
+    // Convert markdown → HTML
     const text = await res.text();
-    content.innerHTML = marked.parse(text);
+    const html = marked.parse(text);
 
-    // Title
+    // Render content
+    content.innerHTML = html;
+
+    // ================= DIAGRAMS (SAFE APPEND) =================
+    const diagramContainer = document.createElement("div");
+    diagramContainer.innerHTML = getDiagramHTML(text);
+    content.appendChild(diagramContainer);
+
+    // ================= TITLE + ACTIVE LINK =================
     if (link) {
       document.getElementById("pageTitle").innerText = link.innerText;
 
-      links.forEach(l => l.classList.remove("active-link"));
+      document.querySelectorAll(".sidebar a").forEach(l =>
+        l.classList.remove("active-link")
+      );
+
       link.classList.add("active-link");
       link.classList.add("completed");
     }
 
-    // Progress
+    // ================= PROGRESS =================
     saveProgress(path);
     updateProgress();
 
-    // Features
+    // ================= FEATURES =================
     addCopyButtons();
     loadQuiz(text);
-    addDiagrams(text);
 
-    // 🔥 Fix internal links
+    // ================= FIX INTERNAL LINKS =================
     document.querySelectorAll("#doc-content a").forEach(a => {
       const href = a.getAttribute("href");
 
@@ -204,4 +217,26 @@ links.forEach((l, i) => {
 // ================= INITIAL LOAD =================
 if (allLinks.length > 0) {
   allLinks[0].click();
+}
+// ================= DIAGRAM HTML HELPER =================
+function getDiagramHTML(text) {
+  let html = "";
+
+  if (text.includes("Kerberos")) {
+    html += `
+      <div class="diagram-box">
+        🔐 Kerberos Flow:<br>
+        User → Domain Controller → Ticket → Service Access
+      </div>`;
+  }
+
+  if (text.includes("DCSync")) {
+    html += `
+      <div class="diagram-box">
+        ⚠️ DCSync Attack:<br>
+        Attacker → Domain Controller → Password Hash Dump
+      </div>`;
+  }
+
+  return html;
 }
