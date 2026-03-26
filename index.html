@@ -218,6 +218,36 @@ for (let i = 0; i < collapsibles.length; i++) {
     }
   });
 }
+    const collapsibles = document.getElementsByClassName("collapsible");
+for (let i = 0; i < collapsibles.length; i++) {
+  collapsibles[i].addEventListener("click", function() {
+    this.classList.toggle("open");
+    const nested = this.nextElementSibling;
+    if (nested.style.display === "block") {
+      nested.style.display = "none";
+    } else {
+      nested.style.display = "block";
+    }
+  });
+}
+    links.forEach(link => {
+  link.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    // Remove highlight from all links
+    links.forEach(l => l.classList.remove('active-link'));
+
+    // Highlight the clicked link
+    link.classList.add('active-link');
+
+    // Load markdown file
+    const response = await fetch(link.getAttribute('href'));
+    const text = await response.text();
+    content.innerHTML = marked.parse(text);
+
+    if (window.innerWidth < 768) sidebar.classList.remove('open');
+  });
+});
   </script>
 </body>
 </html>
