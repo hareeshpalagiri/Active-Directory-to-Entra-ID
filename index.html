@@ -1,612 +1,100 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Active Directory to Microsoft Entra ID — Security Reference</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0b0d12; --surface: #12151d; --surface2: #181c27; --border: #1e2435;
-    --accent-purple: #7C3AED; --accent-blue: #2563EB; --accent-red: #DC2626;
-    --accent-green: #059669; --accent-yellow: #D97706; --accent-orange: #EA580C;
-    --text: #e8eaf0; --text-muted: #6b7280; --text-dim: #9ca3af;
-    --search-bg: #181c27; --search-border: #2a3045;
-    --toggle-bg: #1e2435; --card-hover-shadow: 0 8px 30px rgba(0,0,0,0.35);
-    --highlight: rgba(124,58,237,0.15);
-  }
-  [data-theme="light"] {
-    --bg: #f4f5f9; --surface: #ffffff; --surface2: #f0f1f6; --border: #dde1ec;
-    --text: #111827; --text-muted: #6b7280; --text-dim: #4b5563;
-    --search-bg: #ffffff; --search-border: #d1d5db; --toggle-bg: #e5e7eb;
-    --card-hover-shadow: 0 8px 30px rgba(0,0,0,0.10); --highlight: rgba(124,58,237,0.07);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; transition:background .3s,color .3s; }
-  [data-theme="dark"] body::before {
-    content:''; position:fixed; inset:0;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events:none; z-index:999; opacity:.4;
-  }
-
-  /* NAV */
-  nav { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--border); z-index:100; padding:0 20px; display:flex; align-items:center; backdrop-filter:blur(12px); transition:background .3s,border-color .3s; }
-  .nav-logo { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--text); white-space:nowrap; padding:16px 14px 16px 0; border-right:1px solid var(--border); margin-right:4px; flex-shrink:0; }
-  .nav-links { display:flex; align-items:center; overflow-x:auto; scrollbar-width:none; flex:1; }
-  .nav-links::-webkit-scrollbar { display:none; }
-  .nav-item { padding:16px 10px; font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--text-muted); white-space:nowrap; cursor:pointer; transition:color .2s; text-decoration:none; }
-  .nav-item:hover { color:var(--text); }
-  .nav-right { display:flex; align-items:center; gap:10px; flex-shrink:0; padding-left:10px; }
-
-  /* SEARCH */
-  .search-wrap { position:relative; display:flex; align-items:center; }
-  .search-icon { position:absolute; left:9px; font-size:12px; pointer-events:none; color:var(--text-muted); }
-  #search-input {
-    background:var(--search-bg); border:1px solid var(--search-border); border-radius:7px;
-    color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px;
-    padding:7px 28px 7px 28px; width:190px; outline:none;
-    transition:border-color .2s,width .3s,background .3s,box-shadow .2s;
-  }
-  #search-input::placeholder { color:var(--text-muted); }
-  #search-input:focus { border-color:var(--accent-purple); width:240px; box-shadow:0 0 0 3px rgba(124,58,237,.12); }
-  .search-clear { position:absolute; right:7px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:13px; display:none; padding:2px; line-height:1; }
-  .search-clear:hover { color:var(--text); }
-  .kbd-hint { position:absolute; right:8px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text-muted); border:1px solid var(--border); border-radius:3px; padding:1px 4px; pointer-events:none; }
-
-  /* SEARCH OVERLAY */
-  #search-results {
-    display:none; position:fixed; top:55px; left:50%; transform:translateX(-50%);
-    width:min(560px,92vw); background:var(--surface); border:1px solid var(--border);
-    border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,.4); z-index:500;
-    max-height:380px; overflow-y:auto;
-  }
-  .sr-header { padding:10px 16px 8px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.08em; border-bottom:1px solid var(--border); }
-  .sr-item { display:flex; align-items:flex-start; gap:12px; padding:11px 16px; cursor:pointer; transition:background .15s; text-decoration:none; color:inherit; border-bottom:1px solid rgba(255,255,255,.03); }
-  [data-theme="light"] .sr-item { border-bottom-color:rgba(0,0,0,.04); }
-  .sr-item:last-child { border-bottom:none; }
-  .sr-item:hover { background:var(--highlight); }
-  .sr-section-tag { font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 6px; border-radius:4px; background:rgba(124,58,237,.12); color:#a78bfa; border:1px solid rgba(124,58,237,.2); white-space:nowrap; margin-top:3px; flex-shrink:0; }
-  .sr-topic { font-size:13px; font-weight:500; color:var(--text); }
-  .sr-detail { font-size:11px; color:var(--text-muted); margin-top:2px; }
-  .sr-empty { padding:22px 16px; text-align:center; color:var(--text-muted); font-size:13px; }
-  mark { background:rgba(124,58,237,.25); color:#c4b5fd; border-radius:2px; padding:0 1px; }
-  [data-theme="light"] mark { background:rgba(124,58,237,.15); color:#6d28d9; }
-
-  /* THEME TOGGLE */
-  .theme-toggle { width:40px; height:22px; border-radius:100px; background:var(--toggle-bg); border:1px solid var(--border); cursor:pointer; position:relative; transition:background .3s,border-color .3s; flex-shrink:0; }
-  .toggle-knob { position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:var(--accent-purple); transition:transform .25s cubic-bezier(.4,0,.2,1); display:flex; align-items:center; justify-content:center; font-size:9px; }
-  [data-theme="light"] .toggle-knob { transform:translateX(18px); }
-
-  /* HEADER */
-  header { position:relative; padding:80px 40px 60px; text-align:center; border-bottom:1px solid var(--border); overflow:hidden; }
-  header::before { content:''; position:absolute; top:-100px; left:50%; transform:translateX(-50%); width:600px; height:400px; background:radial-gradient(ellipse,rgba(124,58,237,.18) 0%,transparent 70%); pointer-events:none; }
-  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(124,58,237,.1); border:1px solid rgba(124,58,237,.3); border-radius:100px; padding:6px 16px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#a78bfa; letter-spacing:.08em; text-transform:uppercase; margin-bottom:28px; }
-  .hero-badge span { width:6px; height:6px; border-radius:50%; background:#7C3AED; display:inline-block; animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-  h1 { font-family:'Syne',sans-serif; font-size:clamp(32px,5vw,58px); font-weight:800; line-height:1.1; letter-spacing:-.02em; background:linear-gradient(135deg,#e8eaf0 0%,#a78bfa 50%,#60a5fa 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:20px; }
-  [data-theme="light"] h1 { background:linear-gradient(135deg,#111827 0%,#7C3AED 50%,#2563EB 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-  .hero-sub { font-size:16px; color:var(--text-dim); max-width:600px; margin:0 auto 40px; line-height:1.7; font-weight:300; }
-  .badges { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:40px; }
-  .badge { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; letter-spacing:.03em; }
-  .badge-purple { background:rgba(124,58,237,.15); border:1px solid rgba(124,58,237,.3); color:#a78bfa; }
-  .badge-blue   { background:rgba(37,99,235,.15);  border:1px solid rgba(37,99,235,.3);  color:#60a5fa; }
-  .badge-red    { background:rgba(220,38,38,.15);  border:1px solid rgba(220,38,38,.3);  color:#f87171; }
-  .badge-green  { background:rgba(5,150,105,.15);  border:1px solid rgba(5,150,105,.3);  color:#34d399; }
-  .badge-yellow { background:rgba(217,119,6,.15);  border:1px solid rgba(217,119,6,.3);  color:#fbbf24; }
-  .hero-actions { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
-  .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:8px; font-family:'Syne',sans-serif; font-size:14px; font-weight:600; text-decoration:none; transition:all .2s; cursor:pointer; border:none; }
-  .btn-primary { background:var(--accent-purple); color:white; box-shadow:0 0 20px rgba(124,58,237,.3); }
-  .btn-primary:hover { background:#6d28d9; box-shadow:0 0 30px rgba(124,58,237,.5); transform:translateY(-1px); }
-  .btn-outline { background:transparent; color:var(--text); border:1px solid var(--border); }
-  .btn-outline:hover { border-color:#4b5563; background:var(--surface); transform:translateY(-1px); }
-
-  /* STATS */
-  .stats-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); border-bottom:1px solid var(--border); }
-  .stat-item { padding:28px 20px; text-align:center; border-right:1px solid var(--border); transition:background .2s; }
-  .stat-item:last-child { border-right:none; }
-  .stat-item:hover { background:var(--surface); }
-  .stat-num { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; line-height:1; margin-bottom:4px; }
-  .stat-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-family:'JetBrains Mono',monospace; }
-
-  /* LAYOUT */
-  .container { max-width:1200px; margin:0 auto; padding:60px 40px; }
-  .section-label { font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-muted); margin-bottom:12px; }
-  .section-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:700; margin-bottom:32px; color:var(--text); }
-
-  /* LEARNING PATH */
-  .learning-path { display:flex; flex-direction:column; position:relative; margin-bottom:80px; }
-  .learning-path::before { content:''; position:absolute; left:28px; top:40px; bottom:40px; width:2px; background:linear-gradient(to bottom,var(--accent-purple),var(--accent-blue),var(--accent-green)); opacity:.3; }
-  .path-step { display:flex; gap:20px; align-items:flex-start; padding:20px 0; }
-  .step-dot { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; flex-shrink:0; margin-top:2px; position:relative; z-index:1; }
-  .step-content h3 { font-family:'Syne',sans-serif; font-size:16px; font-weight:600; margin-bottom:4px; }
-  .step-content p { font-size:13px; color:var(--text-muted); line-height:1.5; }
-
-  /* SECTIONS GRID */
-  .sections-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px; margin-bottom:80px; }
-  .section-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; transition:all .25s; position:relative; overflow:hidden; }
-  .section-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; border-radius:3px 0 0 3px; }
-  .section-card:hover { border-color:#2d3447; transform:translateY(-2px); box-shadow:var(--card-hover-shadow); }
-  .card-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-  .card-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
-  .card-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:.08em; }
-  .card-title { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-top:2px; }
-  .card-desc { font-size:12px; color:var(--text-muted); margin-bottom:16px; line-height:1.5; font-style:italic; }
-
-  /* TOPIC ITEMS — now clickable links */
-  .topic-list { display:flex; flex-direction:column; gap:1px; }
-  .topic-item {
-    display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-dim);
-    padding:6px 6px; border-radius:6px; border-bottom:1px solid rgba(255,255,255,.03);
-    text-decoration:none; transition:background .15s; cursor:pointer;
-  }
-  [data-theme="light"] .topic-item { border-bottom-color:rgba(0,0,0,.04); }
-  .topic-item:last-child { border-bottom:none; }
-  .topic-item:hover { background:var(--highlight); }
-  .topic-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
-  .topic-item-inner { flex:1; min-width:0; }
-  .topic-name { font-weight:500; color:var(--text); }
-  .topic-detail { color:var(--text-muted); margin-top:1px; font-size:11px; }
-  .gh-link {
-    opacity:0; font-size:10px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;
-    padding:2px 6px; border:1px solid var(--border); border-radius:4px; white-space:nowrap;
-    flex-shrink:0; transition:opacity .15s,border-color .15s,color .15s; line-height:1.6;
-  }
-  .topic-item:hover .gh-link { opacity:1; }
-
-  /* COLOUR THEMES */
-  .theme-purple .section-card::before { background:var(--accent-purple); }
-  .theme-purple .card-icon { background:rgba(124,58,237,.1); }
-  .theme-purple .topic-dot { background:var(--accent-purple); }
-  .theme-purple .card-num { color:#a78bfa; }
-  .theme-purple .topic-item:hover .gh-link { color:#a78bfa; border-color:rgba(124,58,237,.4); }
-
-  .theme-blue .section-card::before { background:var(--accent-blue); }
-  .theme-blue .card-icon { background:rgba(37,99,235,.1); }
-  .theme-blue .topic-dot { background:var(--accent-blue); }
-  .theme-blue .card-num { color:#60a5fa; }
-  .theme-blue .topic-item:hover .gh-link { color:#60a5fa; border-color:rgba(37,99,235,.4); }
-
-  .theme-red .section-card::before { background:var(--accent-red); }
-  .theme-red .card-icon { background:rgba(220,38,38,.1); }
-  .theme-red .topic-dot { background:var(--accent-red); }
-  .theme-red .card-num { color:#f87171; }
-  .theme-red .topic-item:hover .gh-link { color:#f87171; border-color:rgba(220,38,38,.4); }
-
-  .theme-green .section-card::before { background:var(--accent-green); }
-  .theme-green .card-icon { background:rgba(5,150,105,.1); }
-  .theme-green .topic-dot { background:var(--accent-green); }
-  .theme-green .card-num { color:#34d399; }
-  .theme-green .topic-item:hover .gh-link { color:#34d399; border-color:rgba(5,150,105,.4); }
-
-  .theme-yellow .section-card::before { background:var(--accent-yellow); }
-  .theme-yellow .card-icon { background:rgba(217,119,6,.1); }
-  .theme-yellow .topic-dot { background:var(--accent-yellow); }
-  .theme-yellow .card-num { color:#fbbf24; }
-  .theme-yellow .topic-item:hover .gh-link { color:#fbbf24; border-color:rgba(217,119,6,.4); }
-
-  .theme-orange .section-card::before { background:var(--accent-orange); }
-  .theme-orange .card-icon { background:rgba(234,88,12,.1); }
-  .theme-orange .topic-dot { background:var(--accent-orange); }
-  .theme-orange .card-num { color:#fb923c; }
-  .theme-orange .topic-item:hover .gh-link { color:#fb923c; border-color:rgba(234,88,12,.4); }
-
-  /* SEARCH FILTER */
-  .section-card-wrap.hidden { display:none; }
-  .no-results { display:none; grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-muted); font-size:14px; }
-  .no-results .nr-emoji { font-size:36px; display:block; margin-bottom:12px; }
-
-  /* ROLES */
-  .roles-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-bottom:80px; }
-  .role-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px; transition:all .2s; }
-  .role-card:hover { border-color:#2d3447; background:var(--surface2); }
-  .role-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:8px; }
-  .role-sections { display:flex; flex-wrap:wrap; gap:4px; }
-  .role-tag { padding:2px 7px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:10px; background:rgba(255,255,255,.05); color:var(--text-muted); border:1px solid var(--border); }
-  [data-theme="light"] .role-tag { background:rgba(0,0,0,.04); }
-
-  /* PREREQS */
-  .prereq-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; margin-bottom:80px; }
-  .prereq-item { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; font-size:13px; color:var(--text-dim); }
-  .prereq-icon { font-size:18px; }
-
-  /* CERTS */
-  .certs-row { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:80px; }
-  .cert-pill { display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 18px; transition:all .2s; }
-  .cert-pill:hover { border-color:#2d3447; transform:translateY(-1px); }
-  .cert-code { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#60a5fa; }
-  .cert-name { font-size:12px; color:var(--text-muted); }
-
-  /* RESOURCES */
-  .resources-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; margin-bottom:80px; }
-  .resource-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px; text-decoration:none; color:inherit; transition:all .2s; display:flex; align-items:flex-start; gap:12px; }
-  .resource-card:hover { border-color:#2d3447; transform:translateY(-1px); }
-  .resource-icon { font-size:22px; flex-shrink:0; }
-  .resource-title { font-size:13px; font-weight:600; margin-bottom:3px; font-family:'Syne',sans-serif; }
-  .resource-desc { font-size:11px; color:var(--text-muted); line-height:1.5; }
-
-  /* FOOTER */
-  footer { border-top:1px solid var(--border); padding:40px; text-align:center; }
-  .footer-text { font-size:13px; color:var(--text-muted); line-height:1.8; }
-  .footer-text a { color:#a78bfa; text-decoration:none; }
-  .footer-text a:hover { text-decoration:underline; }
-
-  @media (max-width:640px) {
-    header { padding:50px 20px 40px; } .container { padding:40px 20px; }
-    nav { padding:0 12px; } .sections-grid { grid-template-columns:1fr; }
-    .stats-bar { grid-template-columns:repeat(3,1fr); }
-    #search-input { width:120px; } #search-input:focus { width:150px; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Active Directory to Entra ID</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico">
+  <meta name="description" content="Complete guide to Active Directory and Microsoft Entra ID with labs, resources, and interview prep.">
 </head>
 <body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">AD → Entra ID</div>
+    <input type="text" id="searchBox" placeholder="🔍 Search topics...">
+    <ul id="navList">
+      <li><a href="IAM.md">IAM Fundamentals</a></li>
+      <li><a href="AD.md">Active Directory</a></li>
+      <li><a href="Hybrid.md">Hybrid Identity</a></li>
+      <li><a href="Labs.md">Labs</a></li>
+      <li><a href="Interview.md">Interview Prep</a></li>
+      <li><a href="Resources.md">Resources</a></li>
+      <li><a href="About.md">About</a></li>
+    </ul>
+  </aside>
 
-<nav>
-  <div class="nav-logo">AD → Entra ID</div>
-  <div class="nav-links">
-    <a class="nav-item" href="#sections">Sections</a>
-    <a class="nav-item" href="#path">Path</a>
-    <a class="nav-item" href="#roles">Audience</a>
-    <a class="nav-item" href="#certs">Certs</a>
-    <a class="nav-item" href="#resources">Resources</a>
-    <a class="nav-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID" target="_blank">↗ GitHub</a>
-  </div>
-  <div class="nav-right">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Search… (Ctrl+K)" autocomplete="off" />
-      <button class="search-clear" id="search-clear" title="Clear">✕</button>
-    </div>
-    <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
-      <div class="toggle-knob" id="toggle-knob">🌙</div>
-    </button>
-  </div>
-</nav>
+  <!-- Hamburger button for mobile -->
+  <button class="hamburger" id="hamburger">☰</button>
 
-<div id="search-results"></div>
+  <!-- Dark mode toggle -->
+  <button class="dark-toggle" id="darkToggle">🌙</button>
 
-<!-- HERO -->
-<header>
-  <div class="hero-badge"><span></span> Security Reference · Identity & Access Management</div>
-  <h1>Active Directory<br>to Microsoft Entra ID</h1>
-  <p class="hero-sub">A complete security reference — from on-premise identity infrastructure to cloud IAM. Covers architecture, authentication protocols, attack techniques, defence hardening, monitoring, and real-world labs.</p>
-  <div class="badges">
-    <span class="badge badge-purple">📂 10 Sections</span>
-    <span class="badge badge-blue">📄 65+ Sub-topics</span>
-    <span class="badge badge-red">⚠️ 30+ Attack Techniques</span>
-    <span class="badge badge-green">🎯 400+ Interview Q&amp;As</span>
-    <span class="badge badge-yellow">🔧 200+ Commands</span>
-  </div>
-  <div class="hero-actions">
-    <a href="#sections" class="btn btn-primary">→ Browse Sections</a>
-    <a href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID" target="_blank" class="btn btn-outline">⭐ Star on GitHub</a>
-  </div>
-</header>
+  <!-- Main Content -->
+  <main class="content">
+    <header>
+      <h1>Active Directory → Entra ID</h1>
+      <p>A complete guide to Identity & Access Management</p>
+    </header>
 
-<!-- STATS -->
-<div class="stats-bar">
-  <div class="stat-item"><div class="stat-num" style="color:#a78bfa">10</div><div class="stat-label">Sections</div></div>
-  <div class="stat-item"><div class="stat-num" style="color:#60a5fa">65+</div><div class="stat-label">Sub-topics</div></div>
-  <div class="stat-item"><div class="stat-num" style="color:#f87171">30+</div><div class="stat-label">Attack Techniques</div></div>
-  <div class="stat-item"><div class="stat-num" style="color:#34d399">400+</div><div class="stat-label">Interview Q&amp;As</div></div>
-  <div class="stat-item"><div class="stat-num" style="color:#fbbf24">200+</div><div class="stat-label">Commands</div></div>
-  <div class="stat-item"><div class="stat-num" style="color:#fb923c">50+</div><div class="stat-label">Scenarios</div></div>
-</div>
+    <section id="doc-content">
+      <p>Select a topic from the sidebar to view its content.</p>
+    </section>
 
-<!-- LEARNING PATH -->
-<div class="container" id="path">
-  <div class="section-label">// learning path</div>
-  <div class="section-title">Follow This Order to Build Expertise</div>
-  <div class="learning-path">
-    <div class="path-step"><div class="step-dot" style="background:rgba(124,58,237,.15);border:2px solid #7C3AED;color:#a78bfa">01</div><div class="step-content"><h3>Fundamentals → IAM Core Concepts</h3><p>Identity types, lifecycle, authentication models, Zero Trust, PAM, and audit logging.</p></div></div>
-    <div class="path-step"><div class="step-dot" style="background:rgba(37,99,235,.15);border:2px solid #2563EB;color:#60a5fa">02</div><div class="step-content"><h3>Active Directory (On-Premise) → Architecture & Management</h3><p>Forest/domain structure, GPO, DNS, replication, AD trusts, and recovery.</p></div></div>
-    <div class="path-step"><div class="step-dot" style="background:rgba(37,99,235,.12);border:2px solid #3b82f6;color:#93c5fd">03</div><div class="step-content"><h3>AD Authentication Protocols → How Auth Works Under the Hood</h3><p>Kerberos, NTLM, LDAP, AD CS, RADIUS, Smart Cards — with attack vectors for each.</p></div></div>
-    <div class="path-step"><div class="step-dot" style="background:rgba(220,38,38,.15);border:2px solid #DC2626;color:#f87171">04</div><div class="step-content"><h3>AD Security & Attacks → Defend, Then Understand the Attacker</h3><p>Tiered admin model, LAPS, Credential Guard, PAWs — plus Kerberoasting, Golden Ticket, DCSync.</p></div></div>
-    <div class="path-step"><div class="step-dot" style="background:rgba(5,150,105,.15);border:2px solid #059669;color:#34d399">05</div><div class="step-content"><h3>Hybrid Identity → Bridging On-Prem and Cloud</h3><p>Entra Connect, ADFS Federation, Seamless SSO — syncing identities to the cloud.</p></div></div>
-    <div class="path-step"><div class="step-dot" style="background:rgba(234,88,12,.15);border:2px solid #EA580C;color:#fb923c">06</div><div class="step-content"><h3>Labs & Monitoring → Hands-On Practice + Interview Prep</h3><p>Kerberoasting lab, DCSync lab, Sentinel KQL queries, 400+ interview Q&amp;As, 50+ real-world scenarios.</p></div></div>
-  </div>
-</div>
+    <footer>
+      <p>© 2026 Hareesh Palagiri | <a href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID">GitHub Repo</a></p>
+    </footer>
+  </main>
 
-<!-- SECTIONS -->
-<div class="container" id="sections">
-  <div class="section-label">// all sections</div>
-  <div class="section-title">10 Sections · 65+ Topics</div>
-  <div class="sections-grid" id="sections-grid">
+  <!-- Markdown Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const links = document.querySelectorAll('.sidebar a');
+    const content = document.getElementById('doc-content');
+    const searchBox = document.getElementById('searchBox');
+    const navList = document.getElementById('navList');
+    const items = navList.getElementsByTagName('li');
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburger');
+    const darkToggle = document.getElementById('darkToggle');
 
-    <!-- S01 -->
-    <div class="section-card-wrap theme-purple">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🟣</div><div><div class="card-num">SECTION 01</div><div class="card-title">IAM Core Concepts</div></div></div>
-        <div class="card-desc">The foundation — understand identity before anything else.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-01-IAM-Core/01-Introduction-to-IAM.md" target="_blank" data-name="Introduction to IAM" data-detail="Identity types, lifecycle, why IAM failures = breaches" data-section="IAM Core Concepts"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Introduction to IAM</div><div class="topic-detail">Identity types, lifecycle, why IAM failures = breaches</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-01-IAM-Core/02-Authentication.md" target="_blank" data-name="Authentication" data-detail="Passwords, hashing, MFA, TOTP, FIDO2, Kerberos, NTLM" data-section="IAM Core Concepts"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Authentication</div><div class="topic-detail">Passwords, hashing, MFA, TOTP, FIDO2, Kerberos, NTLM</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-01-IAM-Core/03-Authorization.md" target="_blank" data-name="Authorization" data-detail="RBAC, ABAC, DAC, MAC — access control models" data-section="IAM Core Concepts"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Authorization</div><div class="topic-detail">RBAC, ABAC, DAC, MAC — access control models</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-01-IAM-Core/04-SSO-and-Federation.md" target="_blank" data-name="SSO & Federation" data-detail="SAML, OAuth 2.0, OIDC, Golden SAML" data-section="IAM Core Concepts"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">SSO & Federation</div><div class="topic-detail">SAML, OAuth 2.0, OIDC, Golden SAML</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-01-IAM-Core/05-PAM.md" target="_blank" data-name="Privileged Access Management" data-detail="JIT, vaulting, LAPS, gMSA, CyberArk, PIM" data-section="IAM Core Concepts"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Privileged Access Management</div><div class="topic-detail">JIT, vaulting, LAPS, gMSA, CyberArk, PIM</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-01-IAM-Core/06-Zero-Trust.md" target="_blank" data-name="Zero Trust Architecture" data-detail="Never trust, always verify — 5 pillars" data-section="IAM Core Concepts"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Zero Trust Architecture</div><div class="topic-detail">Never trust, always verify — 5 pillars</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-01-IAM-Core/07-Audit-and-Logging.md" target="_blank" data-name="Audit & Logging" data-detail="Event IDs, SIEM, KQL queries, detection" data-section="IAM Core Concepts"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Audit & Logging</div><div class="topic-detail">Event IDs, SIEM, KQL queries, detection</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S02 -->
-    <div class="section-card-wrap theme-blue">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🔵</div><div><div class="card-num">SECTION 02</div><div class="card-title">Active Directory (On-Premise)</div></div></div>
-        <div class="card-desc">How Windows domain environments are built and managed.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-02-Active-Directory/01-What-is-AD.md" target="_blank" data-name="What is Active Directory" data-detail="Purpose, components, FSMO roles, NTDS.dit" data-section="Active Directory"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">What is Active Directory</div><div class="topic-detail">Purpose, components, FSMO roles, NTDS.dit</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-02-Active-Directory/02-Forest-Domain-OU.md" target="_blank" data-name="Forest, Domain & OU Structure" data-detail="Hierarchy, Global Catalog, DN, design" data-section="Active Directory"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Forest, Domain & OU Structure</div><div class="topic-detail">Hierarchy, Global Catalog, DN, design</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-02-Active-Directory/03-Users-Groups-Computers.md" target="_blank" data-name="Users, Groups & Computers" data-detail="Group types, AGDLP, UAC flags, AdminSDHolder" data-section="Active Directory"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Users, Groups & Computers</div><div class="topic-detail">Group types, AGDLP, UAC flags, AdminSDHolder</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-02-Active-Directory/04-Group-Policy-GPO.md" target="_blank" data-name="Group Policy GPO" data-detail="LSDOU, inheritance, scripts, GPO attacks" data-section="Active Directory"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Group Policy (GPO)</div><div class="topic-detail">LSDOU, inheritance, scripts, GPO attacks</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-02-Active-Directory/05-DNS-and-DHCP.md" target="_blank" data-name="DNS & DHCP in AD" data-detail="SRV records, DORA, authorisation, attacks" data-section="Active Directory"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">DNS & DHCP in AD</div><div class="topic-detail">SRV records, DORA, authorisation, attacks</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-02-Active-Directory/06-Sites-and-Replication.md" target="_blank" data-name="Sites, Subnets & Replication" data-detail="KCC, intra vs intersite, repadmin" data-section="Active Directory"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Sites, Subnets & Replication</div><div class="topic-detail">KCC, intra vs intersite, repadmin</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-02-Active-Directory/07-AD-Trusts.md" target="_blank" data-name="AD Trusts" data-detail="Trust types, SID filtering, delegation risk" data-section="Active Directory"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">AD Trusts</div><div class="topic-detail">Trust types, SID filtering, delegation risk</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-02-Active-Directory/08-AD-Recycle-Bin.md" target="_blank" data-name="AD Recycle Bin & Recovery" data-detail="Recycle Bin, DSRM, backup, authoritative restore" data-section="Active Directory"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">AD Recycle Bin & Recovery</div><div class="topic-detail">Recycle Bin, DSRM, backup, authoritative restore</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S03 -->
-    <div class="section-card-wrap theme-blue">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🔵</div><div><div class="card-num">SECTION 03</div><div class="card-title">AD Authentication Protocols</div></div></div>
-        <div class="card-desc">How authentication actually works under the hood.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-03-AD-Auth-Protocols/01-Kerberos.md" target="_blank" data-name="Kerberos" data-detail="TGT flow, SPN config, Kerberoasting, Golden Ticket" data-section="AD Auth Protocols"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Kerberos</div><div class="topic-detail">TGT flow, SPN config, Kerberoasting, Golden Ticket</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-03-AD-Auth-Protocols/02-NTLM.md" target="_blank" data-name="NTLM" data-detail="Challenge-response, Pass-the-Hash, NTLM Relay" data-section="AD Auth Protocols"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">NTLM</div><div class="topic-detail">Challenge-response, Pass-the-Hash, NTLM Relay</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-03-AD-Auth-Protocols/03-LDAP-and-LDAPS.md" target="_blank" data-name="LDAP & LDAPS" data-detail="Config, LDAP injection, relay attacks" data-section="AD Auth Protocols"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">LDAP & LDAPS</div><div class="topic-detail">Config, LDAP injection, relay attacks</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-03-AD-Auth-Protocols/04-AD-CS.md" target="_blank" data-name="AD Certificate Services" data-detail="PKI, ESC1-ESC4, Golden Certificate" data-section="AD Auth Protocols"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">AD Certificate Services</div><div class="topic-detail">PKI, ESC1-ESC4, Golden Certificate</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-03-AD-Auth-Protocols/05-RADIUS-and-8021X.md" target="_blank" data-name="RADIUS & 802.1X" data-detail="Wi-Fi/VPN, Evil Twin, 802.1X bypass" data-section="AD Auth Protocols"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">RADIUS & 802.1X</div><div class="topic-detail">Wi-Fi/VPN, Evil Twin, 802.1X bypass</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-03-AD-Auth-Protocols/06-Smart-Card-Auth.md" target="_blank" data-name="Smart Card Auth" data-detail="PKINIT flow, badge printing, WHfB" data-section="AD Auth Protocols"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Smart Card Auth</div><div class="topic-detail">PKINIT flow, badge printing, WHfB</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S04 -->
-    <div class="section-card-wrap theme-blue">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🔵</div><div><div class="card-num">SECTION 04</div><div class="card-title">AD Security & Hardening</div></div></div>
-        <div class="card-desc">Defending and securing AD environments.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-04-AD-Security/01-Tiered-Admin-Model.md" target="_blank" data-name="Tiered Admin Model" data-detail="Tier 0/1/2 separation, privileged accounts" data-section="AD Security"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Tiered Admin Model</div><div class="topic-detail">Tier 0/1/2 separation, privileged accounts</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-04-AD-Security/02-LAPS.md" target="_blank" data-name="LAPS" data-detail="Secure local admin passwords" data-section="AD Security"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">LAPS</div><div class="topic-detail">Secure local admin passwords</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-04-AD-Security/03-Credential-Guard.md" target="_blank" data-name="Credential Guard" data-detail="Protect LSASS secrets" data-section="AD Security"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Credential Guard</div><div class="topic-detail">Protect LSASS secrets</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-04-AD-Security/04-Privileged-Access-Workstations.md" target="_blank" data-name="Privileged Access Workstations PAWs" data-detail="Hardened admin workstations" data-section="AD Security"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Privileged Access Workstations (PAWs)</div><div class="topic-detail">Hardened admin workstations</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-04-AD-Security/05-Secure-Delegation.md" target="_blank" data-name="Secure Delegation" data-detail="Constrained & resource-based delegation" data-section="AD Security"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Secure Delegation</div><div class="topic-detail">Constrained & resource-based delegation</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S05 -->
-    <div class="section-card-wrap theme-red">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🔴</div><div><div class="card-num">SECTION 05</div><div class="card-title">AD Attack Techniques</div></div></div>
-        <div class="card-desc">Common attack paths and exploitation techniques.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-05-AD-Attacks/01-Kerberoasting.md" target="_blank" data-name="Kerberoasting" data-detail="SPN abuse, cracking service tickets" data-section="AD Attacks"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Kerberoasting</div><div class="topic-detail">SPN abuse, cracking service tickets</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-05-AD-Attacks/02-Golden-Ticket.md" target="_blank" data-name="Golden Ticket" data-detail="Forging TGTs with KRBTGT hash" data-section="AD Attacks"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Golden Ticket</div><div class="topic-detail">Forging TGTs with KRBTGT hash</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-05-AD-Attacks/03-DCSync.md" target="_blank" data-name="DCSync" data-detail="Replicating secrets via directory replication" data-section="AD Attacks"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">DCSync</div><div class="topic-detail">Replicating secrets via directory replication</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-05-AD-Attacks/04-Pass-the-Hash.md" target="_blank" data-name="Pass-the-Hash" data-detail="NTLM hash reuse without cracking" data-section="AD Attacks"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Pass-the-Hash</div><div class="topic-detail">NTLM hash reuse without cracking</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-05-AD-Attacks/05-BloodHound.md" target="_blank" data-name="BloodHound" data-detail="Graph-based privilege escalation mapping" data-section="AD Attacks"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">BloodHound</div><div class="topic-detail">Graph-based privilege escalation mapping</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S06 -->
-    <div class="section-card-wrap theme-green">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🟢</div><div><div class="card-num">SECTION 06</div><div class="card-title">Microsoft Entra ID (Cloud)</div></div></div>
-        <div class="card-desc">Identity in the cloud — tenants, roles, app registrations.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-06-Azure-EntraID-Cloud/01-Entra-Tenants.md" target="_blank" data-name="Entra Tenants" data-detail="Tenant structure, domains, management" data-section="Entra ID Cloud"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Entra Tenants</div><div class="topic-detail">Tenant structure, domains, management</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-06-Azure-EntraID-Cloud/02-Entra-Roles.md" target="_blank" data-name="Entra Roles" data-detail="Built-in roles, custom roles, scope" data-section="Entra ID Cloud"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Entra Roles</div><div class="topic-detail">Built-in roles, custom roles, scope</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-06-Azure-EntraID-Cloud/03-App-Registrations.md" target="_blank" data-name="App Registrations" data-detail="Service principals, OAuth flows, permissions" data-section="Entra ID Cloud"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">App Registrations</div><div class="topic-detail">Service principals, OAuth flows, permissions</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S07 -->
-    <div class="section-card-wrap theme-green">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🟢</div><div><div class="card-num">SECTION 07</div><div class="card-title">Entra ID Security</div></div></div>
-        <div class="card-desc">Securing cloud identity with Microsoft's native controls.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-07-Entra-ID-Security/01-Conditional-Access.md" target="_blank" data-name="Conditional Access" data-detail="Policies, risk-based access control" data-section="Entra ID Security"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Conditional Access</div><div class="topic-detail">Policies, risk-based access control</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-07-Entra-ID-Security/02-MFA.md" target="_blank" data-name="Multi-Factor Authentication MFA" data-detail="Methods, enforcement, passwordless" data-section="Entra ID Security"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Multi-Factor Authentication</div><div class="topic-detail">Methods, enforcement, passwordless</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-07-Entra-ID-Security/03-Identity-Protection.md" target="_blank" data-name="Identity Protection" data-detail="Risk detection, automated response" data-section="Entra ID Security"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Identity Protection</div><div class="topic-detail">Risk detection, automated response</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S08 -->
-    <div class="section-card-wrap theme-green">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🟢</div><div><div class="card-num">SECTION 08</div><div class="card-title">Hybrid Identity</div></div></div>
-        <div class="card-desc">Bridging on-premise AD with Microsoft Entra ID.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-08-Hybrid-Identity/01-Entra-Connect.md" target="_blank" data-name="Entra Connect" data-detail="Sync users, password hash sync, writeback" data-section="Hybrid Identity"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Entra Connect</div><div class="topic-detail">Sync users, password hash sync, writeback</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-08-Hybrid-Identity/02-ADFS-Federation.md" target="_blank" data-name="ADFS Federation" data-detail="Claims-based auth, token issuance, federation trust" data-section="Hybrid Identity"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">ADFS Federation</div><div class="topic-detail">Claims-based auth, token issuance, federation trust</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-08-Hybrid-Identity/03-Seamless-SSO.md" target="_blank" data-name="Seamless SSO" data-detail="Integrated Windows auth, Kerberos-based SSO" data-section="Hybrid Identity"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Seamless SSO</div><div class="topic-detail">Integrated Windows auth, Kerberos-based SSO</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S09 -->
-    <div class="section-card-wrap theme-yellow">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🟡</div><div><div class="card-num">SECTION 09</div><div class="card-title">Monitoring & Incident Response</div></div></div>
-        <div class="card-desc">Detecting and responding to identity-based threats.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-09-Monitoring-Logging-IR/01-Event-IDs.md" target="_blank" data-name="Event IDs" data-detail="Key AD/Entra logs, authentication & replication events" data-section="Monitoring IR"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Event IDs</div><div class="topic-detail">Key AD/Entra logs, authentication & replication events</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-09-Monitoring-Logging-IR/02-Defender-for-Identity.md" target="_blank" data-name="Defender for Identity" data-detail="Threat detection, lateral movement alerts" data-section="Monitoring IR"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Defender for Identity</div><div class="topic-detail">Threat detection, lateral movement alerts</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-09-Monitoring-Logging-IR/03-Sentinel.md" target="_blank" data-name="Microsoft Sentinel SIEM" data-detail="SIEM integration, KQL queries, playbooks, automation" data-section="Monitoring IR"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Microsoft Sentinel</div><div class="topic-detail">SIEM integration, KQL queries, playbooks, automation</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <!-- S10 -->
-    <div class="section-card-wrap theme-orange">
-      <div class="section-card">
-        <div class="card-header"><div class="card-icon">🟠</div><div><div class="card-num">SECTION 10</div><div class="card-title">Labs & Real-World Scenarios</div></div></div>
-        <div class="card-desc">Hands-on practice and 400+ interview Q&amp;As.</div>
-        <div class="topic-list">
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-10-Labs-Scenarios/01-Lab-Kerberoasting.md" target="_blank" data-name="Kerberoasting Lab" data-detail="Attack execution, detection with logs, mitigation" data-section="Labs Scenarios"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Kerberoasting Lab</div><div class="topic-detail">Attack execution, detection with logs, mitigation</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-10-Labs-Scenarios/02-Lab-Conditional-Access.md" target="_blank" data-name="Conditional Access Lab" data-detail="Policy creation, enforcement, bypass attempts" data-section="Labs Scenarios"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Conditional Access Lab</div><div class="topic-detail">Policy creation, enforcement, bypass attempts</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-10-Labs-Scenarios/03-Lab-DCSync.md" target="_blank" data-name="DCSync Lab" data-detail="Replication abuse, detection with Defender for Identity" data-section="Labs Scenarios"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">DCSync Lab</div><div class="topic-detail">Replication abuse, detection with Defender for Identity</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-10-Labs-Scenarios/04-Interview-QA.md" target="_blank" data-name="Interview Q&A" data-detail="400+ curated questions across IAM, AD, Entra, attacks" data-section="Labs Scenarios"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Interview Q&A</div><div class="topic-detail">400+ curated questions across IAM, AD, Entra, attacks</div></div><span class="gh-link">↗ open</span></a>
-          <a class="topic-item" href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID/blob/main/Section-10-Labs-Scenarios/05-Real-World-Scenarios.md" target="_blank" data-name="Real-World Scenarios" data-detail="50+ case studies, IR exercises, SOC workflows" data-section="Labs Scenarios"><div class="topic-dot"></div><div class="topic-item-inner"><div class="topic-name">Real-World Scenarios</div><div class="topic-detail">50+ case studies, IR exercises, SOC workflows</div></div><span class="gh-link">↗ open</span></a>
-        </div>
-      </div>
-    </div>
-
-    <div class="no-results" id="no-results">
-      <span class="nr-emoji">🔍</span>
-      No topics found. Try a different keyword.
-    </div>
-  </div>
-</div>
-
-<!-- WHO IS THIS FOR -->
-<div class="container" id="roles">
-  <div class="section-label">// audience</div>
-  <div class="section-title">Who Is This For?</div>
-  <div class="roles-grid">
-    <div class="role-card"><div class="role-title">🖥️ IT Administrator</div><div class="role-sections"><span class="role-tag">§02</span><span class="role-tag">§03</span><span class="role-tag">§04</span><span class="role-tag">§06</span><span class="role-tag">§08</span></div></div>
-    <div class="role-card"><div class="role-title">🔍 SOC Analyst</div><div class="role-sections"><span class="role-tag">§01</span><span class="role-tag">§05</span><span class="role-tag">§07</span><span class="role-tag">§09</span></div></div>
-    <div class="role-card"><div class="role-title">🎯 Penetration Tester</div><div class="role-sections"><span class="role-tag">§03</span><span class="role-tag">§05</span><span class="role-tag">§07</span><span class="role-tag">§08</span></div></div>
-    <div class="role-card"><div class="role-title">⚙️ Security Engineer</div><div class="role-sections"><span class="role-tag">§01</span><span class="role-tag">§04</span><span class="role-tag">§07</span><span class="role-tag">§09</span></div></div>
-    <div class="role-card"><div class="role-title">☁️ Cloud Engineer</div><div class="role-sections"><span class="role-tag">§06</span><span class="role-tag">§07</span><span class="role-tag">§08</span></div></div>
-    <div class="role-card"><div class="role-title">📋 Interview Prep</div><div class="role-sections"><span class="role-tag">All</span><span class="role-tag">§10 ★</span></div></div>
-  </div>
-</div>
-
-<!-- PREREQS -->
-<div class="container">
-  <div class="section-label">// prerequisites</div>
-  <div class="section-title">Before Starting Labs</div>
-  <div class="prereq-list">
-    <div class="prereq-item"><div class="prereq-icon">🖥️</div>Basic knowledge of Windows Server & Active Directory</div>
-    <div class="prereq-item"><div class="prereq-icon">🧪</div>Access to a test environment (VMs or cloud sandbox)</div>
-    <div class="prereq-item"><div class="prereq-icon">⚡</div>Familiarity with PowerShell and command-line tools</div>
-    <div class="prereq-item"><div class="prereq-icon">☁️</div>Optional: Azure subscription (free tier works)</div>
-  </div>
-</div>
-
-<!-- CERTS -->
-<div class="container" id="certs">
-  <div class="section-label">// certifications</div>
-  <div class="section-title">This Repo Helps Prepare For</div>
-  <div class="certs-row">
-    <div class="cert-pill"><div class="cert-code">SC-900</div><div class="cert-name">Security, Compliance &amp; Identity Fundamentals</div></div>
-    <div class="cert-pill"><div class="cert-code">SC-300</div><div class="cert-name">Identity and Access Administrator</div></div>
-    <div class="cert-pill"><div class="cert-code">AZ-104</div><div class="cert-name">Azure Administrator</div></div>
-    <div class="cert-pill"><div class="cert-code">SC-200</div><div class="cert-name">Security Operations Analyst</div></div>
-  </div>
-</div>
-
-<!-- RESOURCES -->
-<div class="container" id="resources">
-  <div class="section-label">// microsoft free resources</div>
-  <div class="section-title">Free Learning Resources</div>
-  <div class="resources-grid">
-    <a href="https://learn.microsoft.com/" target="_blank" class="resource-card"><div class="resource-icon">📘</div><div><div class="resource-title">Microsoft Learn</div><div class="resource-desc">Free guided modules on AD, Entra ID, IAM, and security</div></div></a>
-    <a href="https://azure.microsoft.com/free/" target="_blank" class="resource-card"><div class="resource-icon">☁️</div><div><div class="resource-title">Azure Free Account</div><div class="resource-desc">Credits and free services to build your own labs</div></div></a>
-    <a href="https://www.microsoft.com/security/business/microsoft-entra" target="_blank" class="resource-card"><div class="resource-icon">🔐</div><div><div class="resource-title">Entra Free Trial</div><div class="resource-desc">Explore Conditional Access, MFA, Identity Protection</div></div></a>
-    <a href="https://learn.microsoft.com/security/" target="_blank" class="resource-card"><div class="resource-icon">🛡️</div><div><div class="resource-title">Microsoft Security Labs</div><div class="resource-desc">Hands-on exercises for Defender, Sentinel, and IAM</div></div></a>
-  </div>
-</div>
-
-<footer>
-  <div class="footer-text">
-    Built with ❤️ by <a href="https://github.com/hareeshpalagiri" target="_blank">Hareesh Palagiri</a>
-    &nbsp;·&nbsp; <a href="https://github.com/hareeshpalagiri/Active-Directory-to-Entra-ID" target="_blank">View on GitHub</a>
-    &nbsp;·&nbsp; Licensed under MIT<br><br>
-    <em>⭐ Star this repo if you find it useful — it helps others discover it too.</em>
-  </div>
-</footer>
-
-<script>
-// ── BUILD SEARCH INDEX ────────────────────────────────
-const allTopics = [];
-document.querySelectorAll('.topic-item[data-name]').forEach(item => {
-  allTopics.push({
-    name:    item.dataset.name,
-    detail:  item.dataset.detail,
-    section: item.dataset.section,
-    href:    item.href,
-    wrap:    item.closest('.section-card-wrap')
-  });
-});
-
-const input      = document.getElementById('search-input');
-const clearBtn   = document.getElementById('search-clear');
-const resultsBox = document.getElementById('search-results');
-const noResults  = document.getElementById('no-results');
-
-function esc(s) { return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function hi(text, q) {
-  if (!q) return esc(text);
-  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
-  return esc(text).replace(re, '<mark>$1</mark>');
-}
-
-function doSearch(q) {
-  clearBtn.style.display = q ? 'block' : 'none';
-  if (!q) {
-    document.querySelectorAll('.section-card-wrap').forEach(w => w.classList.remove('hidden'));
-    noResults.style.display = 'none';
-    resultsBox.style.display = 'none';
-    return;
-  }
-  const lower = q.toLowerCase();
-  const matches = allTopics.filter(t =>
-    t.name.toLowerCase().includes(lower) ||
-    t.detail.toLowerCase().includes(lower) ||
-    t.section.toLowerCase().includes(lower)
-  );
-  const matchedWraps = new Set(matches.map(m => m.wrap));
-  document.querySelectorAll('.section-card-wrap').forEach(w => w.classList.toggle('hidden', !matchedWraps.has(w)));
-  noResults.style.display = matchedWraps.size === 0 ? 'block' : 'none';
-
-  if (matches.length === 0) {
-    resultsBox.innerHTML = `<div class="sr-empty">No results for "<strong>${esc(q)}</strong>"</div>`;
-  } else {
-    let html = `<div class="sr-header">${matches.length} result${matches.length>1?'s':''} for "${esc(q)}"</div>`;
-    matches.slice(0,10).forEach(m => {
-      html += `<a class="sr-item" href="${m.href}" target="_blank">
-        <span class="sr-section-tag">${esc(m.section)}</span>
-        <div><div class="sr-topic">${hi(m.name,q)}</div><div class="sr-detail">${hi(m.detail,q)}</div></div>
-      </a>`;
+    // Load markdown files
+    links.forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const response = await fetch(link.getAttribute('href'));
+        const text = await response.text();
+        content.innerHTML = marked.parse(text);
+        if (window.innerWidth < 768) sidebar.classList.remove('open');
+      });
     });
-    if (matches.length > 10) html += `<div class="sr-empty" style="font-size:11px">+ ${matches.length-10} more — refine your search</div>`;
-    resultsBox.innerHTML = html;
-  }
-  resultsBox.style.display = 'block';
-}
 
-input.addEventListener('input', e => doSearch(e.target.value.trim()));
-input.addEventListener('focus', e => { if (e.target.value.trim()) resultsBox.style.display = 'block'; });
-clearBtn.addEventListener('click', () => { input.value=''; doSearch(''); input.focus(); });
-document.addEventListener('click', e => { if (!resultsBox.contains(e.target) && e.target !== input) resultsBox.style.display = 'none'; });
-document.addEventListener('keydown', e => {
-  if (e.key==='Escape') { resultsBox.style.display='none'; input.blur(); }
-  if ((e.ctrlKey||e.metaKey) && e.key==='k') { e.preventDefault(); input.focus(); input.select(); }
-});
+    // Search filter
+    searchBox.addEventListener('keyup', () => {
+      const filter = searchBox.value.toLowerCase();
+      for (let i = 0; i < items.length; i++) {
+        const link = items[i].getElementsByTagName('a')[0];
+        const text = link.textContent || link.innerText;
+        items[i].style.display = text.toLowerCase().includes(filter) ? "" : "none";
+      }
+    });
 
-// ── THEME TOGGLE ──────────────────────────────────────
-const html   = document.documentElement;
-const toggle = document.getElementById('theme-toggle');
-const knob   = document.getElementById('toggle-knob');
-const saved  = localStorage.getItem('ad-entra-theme') || 'dark';
-html.setAttribute('data-theme', saved);
-knob.textContent = saved==='dark' ? '🌙' : '☀️';
-toggle.addEventListener('click', () => {
-  const next = html.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  knob.textContent = next==='dark' ? '🌙' : '☀️';
-  localStorage.setItem('ad-entra-theme', next);
-});
-</script>
+    // Toggle sidebar on mobile
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // Dark mode toggle
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+  </script>
 </body>
 </html>
