@@ -11,22 +11,28 @@ const basePath = "./";
 // ================= LOAD PAGE =================
 async function loadPage(path, link) {
   try {
-    // Loading state
     content.innerHTML = "⏳ Loading...";
 
-    // Fetch markdown (relative path works for GitHub Pages)
-    const res = await fetch("./" + path);
+    // 🔥 Dynamic base path (works everywhere)
+    const base = window.location.pathname.includes("Active-Directory-to-Entra-ID")
+      ? "/Active-Directory-to-Entra-ID/"
+      : "/";
+
+    const fullPath = base + path;
+
+    console.log("Loading:", fullPath); // DEBUG
+
+    const res = await fetch(fullPath);
 
     if (!res.ok) {
-      content.innerHTML = "⚠️ Error loading content<br>" + path;
+      content.innerHTML = "⚠️ File not found:<br>" + fullPath;
       return;
     }
 
-    // Convert markdown to HTML
     const text = await res.text();
     content.innerHTML = marked.parse(text);
 
-    // Page title update
+    // Title update
     if (link) {
       document.getElementById("pageTitle").innerText = link.innerText;
 
@@ -35,11 +41,11 @@ async function loadPage(path, link) {
       link.classList.add("completed");
     }
 
-    // Save & update progress
+    // Progress
     saveProgress(path);
     updateProgress();
 
-    // Add features
+    // Features
     addCopyButtons();
     loadQuiz(text);
     addDiagrams(text);
@@ -61,7 +67,7 @@ async function loadPage(path, link) {
     });
 
   } catch (err) {
-    content.innerHTML = "❌ Failed to load content";
+    content.innerHTML = "❌ Error loading content";
     console.error(err);
   }
 }
