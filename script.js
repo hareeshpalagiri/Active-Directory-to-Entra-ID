@@ -5,62 +5,90 @@ const quizContainer = document.getElementById("quiz-container");
 let currentIndex = 0;
 const allLinks = Array.from(links);
 
-// LOAD PAGE
+// 🔥 IMPORTANT: GitHub Pages base path
+const basePath = "/Active-Directory-to-Entra-ID/";
+
+// ================= LOAD PAGE =================
 async function loadPage(path, link) {
-  const res = await fetch(path);
+  try {
+    content.innerHTML = "⏳ Loading...";
 
-  if (!res.ok) {
-    content.innerHTML = "❌ File not found";
-    return;
+    const res = await fetch(basePath + path);
+
+    if (!res.ok) {
+      content.innerHTML = "⚠️ Error loading content";
+      return;
+    }
+
+    const text = await res.text();
+    content.innerHTML = marked.parse(text);
+
+    // Page title
+    document.getElementById("pageTitle").innerText = link.innerText;
+
+    // Progress
+    saveProgress(path);
+    updateProgress();
+
+    // Highlight active
+    links.forEach(l => l.classList.remove("active-link"));
+    link.classList.add("active-link");
+    link.classList.add("completed");
+
+    // Features
+    addCopyButtons();
+    loadQuiz(text);
+    addDiagrams(text);
+
+  } catch (err) {
+    content.innerHTML = "❌ Something went wrong";
+    console.error(err);
   }
-
-  const text = await res.text();
-  content.innerHTML = marked.parse(text);
-
-  document.getElementById("pageTitle").innerText = link.innerText;
-
-  // progress
-  saveProgress(path);
-  updateProgress();
-
-  // highlight
-  links.forEach(l => l.classList.remove("active-link"));
-  link.classList.add("active-link");
-  link.classList.add("completed");
-
-  addCopyButtons();
-  loadQuiz(text);
-  addDiagrams(text);
 }
 
-// PROGRESS
+// ================= PROGRESS =================
 function saveProgress(p) {
-  let v = JSON.parse(localStorage.getItem("visited") || "[]");
-  if (!v.includes(p)) v.push(p);
-  localStorage.setItem("visited", JSON.stringify(v));
+  let visited = JSON.parse(localStorage.getItem("visited") || "[]");
+
+  if (!visited.includes(p)) {
+    visited.push(p);
+    localStorage.setItem("visited", JSON.stringify(visited));
+  }
 }
 
 function updateProgress() {
-  let v = JSON.parse(localStorage.getItem("visited") || "[]");
-  let percent = (v.length / allLinks.length) * 100;
+  let visited = JSON.parse(localStorage.getItem("visited") || "[]");
+
+  let percent = (visited.length / allLinks.length) * 100;
+
   document.getElementById("progress-bar").style.width = percent + "%";
   document.getElementById("progressText").innerText =
     "Progress: " + Math.round(percent) + "%";
 }
 
-// QUIZ
+// ================= QUIZ =================
 function loadQuiz(text) {
+  let question = "Which protocol is more secure?";
+  let correct = "Kerberos";
+  let wrong = "NTLM";
+
+  if (text.includes("NTLM")) {
+    question = "Why is NTLM weaker?";
+    correct = "Uses hashes";
+    wrong = "Uses tickets";
+  }
+
   quizContainer.innerHTML = `
     <div class="quiz-card">
-      <h3>Quick Quiz</h3>
-      <p>Which protocol is most secure?</p>
-      <button onclick="alert('Correct')">Kerberos</button>
-      <button onclick="alert('Wrong')">NTLM</button>
+      <h3>🧠 Quick Quiz</h3>
+      <p>${question}</p>
+      <button onclick="alert('✅ Correct!')">${correct}</button>
+      <button onclick="alert('❌ Try again')">${wrong}</button>
     </div>
   `;
 }
 
-// COPY BUTTON
+// ================= COPY BUTTON =================
 function addCopyButtons() {
   document.querySelectorAll("pre code").forEach(block => {
     const btn = document.createElement("button");
@@ -78,45 +106,61 @@ function addCopyButtons() {
   });
 }
 
-// DIAGRAMS
+// ================= DIAGRAMS =================
 function addDiagrams(text) {
   if (text.includes("Kerberos")) {
     content.innerHTML += `
       <div class="diagram-box">
-        🔐 Kerberos Flow: User → DC → Ticket → Service
+        🔐 Kerberos Flow:<br>
+        User → Domain Controller → Ticket → Service Access
+      </div>`;
+  }
+
+  if (text.includes("DCSync")) {
+    content.innerHTML += `
+      <div class="diagram-box">
+        ⚠️ DCSync Attack:<br>
+        Attacker → Domain Controller → Password Hash Dump
       </div>`;
   }
 }
 
-// NAV
+// ================= NAVIGATION =================
 document.getElementById("prevBtn").onclick = () => {
-  if (currentIndex > 0) allLinks[currentIndex - 1].click();
+  if (currentIndex > 0) {
+    currentIndex--;
+    allLinks[currentIndex].click();
+  }
 };
 
 document.getElementById("nextBtn").onclick = () => {
-  if (currentIndex < allLinks.length - 1)
-    allLinks[currentIndex + 1].click();
+  if (currentIndex < allLinks.length - 1) {
+    currentIndex++;
+    allLinks[currentIndex].click();
+  }
 };
 
 document.getElementById("homeBtn").onclick = () => {
+  currentIndex = 0;
   allLinks[0].click();
 };
 
-// DARK MODE
+// ================= DARK MODE =================
 document.getElementById("darkModeToggle").onclick = () => {
   document.body.classList.toggle("dark");
 };
 
-// SEARCH
+// ================= SEARCH =================
 document.getElementById("searchBox").onkeyup = function () {
   const filter = this.value.toLowerCase();
+
   links.forEach(link => {
-    link.parentElement.style.display =
-      link.innerText.toLowerCase().includes(filter) ? "" : "none";
+    const match = link.innerText.toLowerCase().includes(filter);
+    link.parentElement.style.display = match ? "" : "none";
   });
 };
 
-// COLLAPSIBLE
+// ================= COLLAPSIBLE =================
 document.querySelectorAll(".collapsible").forEach(c => {
   c.onclick = function () {
     const n = this.nextElementSibling;
@@ -124,7 +168,7 @@ document.querySelectorAll(".collapsible").forEach(c => {
   };
 });
 
-// CLICK
+// ================= CLICK EVENTS =================
 links.forEach((l, i) => {
   l.onclick = e => {
     e.preventDefault();
@@ -133,5 +177,7 @@ links.forEach((l, i) => {
   };
 });
 
-// START
-if (allLinks.length > 0) allLinks[0].click();
+// ================= INITIAL LOAD =================
+if (allLinks.length > 0) {
+  allLinks[0].click();
+}
