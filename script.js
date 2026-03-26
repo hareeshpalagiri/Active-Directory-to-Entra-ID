@@ -15,53 +15,41 @@ async function loadPage(path, link) {
   try {
     content.innerHTML = "⏳ Loading...";
 
-    const fullPath = RAW_BASE + path;
+    const rawBase = "https://raw.githubusercontent.com/hareeshpalagiri/Active-Directory-to-Entra-ID/main/";
+    const fullPath = rawBase + path;
 
-    console.log("Trying:", fullPath);
+    // 🔍 SHOW EXACT PATH ON SCREEN
+    content.innerHTML = "Trying to load:<br>" + fullPath;
 
     const res = await fetch(fullPath);
 
     if (!res.ok) {
       content.innerHTML = `
-        ❌ Cannot load file<br>
-        <b>${fullPath}</b><br><br>
-        👉 Open this URL manually to verify
+        ❌ FAILED<br><br>
+        ${fullPath}<br><br>
+        👉 Copy this URL and open in browser
       `;
       return;
     }
 
     const text = await res.text();
 
-    // ===== RENDER MARKDOWN =====
     content.innerHTML = marked.parse(text);
 
-    // ===== TITLE =====
     if (link) {
       document.getElementById("pageTitle").innerText = link.innerText;
 
-      links.forEach(l => l.classList.remove("active-link"));
+      document.querySelectorAll(".sidebar a").forEach(l =>
+        l.classList.remove("active-link")
+      );
+
       link.classList.add("active-link");
-      link.classList.add("completed");
     }
 
-    // ===== PROGRESS =====
-    saveProgress(path);
-    updateProgress();
-
-    // ===== FEATURES =====
-    addCopyButtons();
-    loadQuiz(text);
-    appendDiagrams(text);
-
-    // ===== FIX INTERNAL LINKS =====
-    fixInternalLinks(path);
-
   } catch (err) {
-    console.error(err);
-    content.innerHTML = "❌ Critical error loading content";
+    content.innerHTML = "❌ Error: " + err.message;
   }
 }
-
 // ================= DIAGRAM APPEND =================
 function appendDiagrams(text) {
   let html = "";
