@@ -1,0 +1,12 @@
+title: "Active Directory to Entra ID"
+description: "Full learning platform with AD → Entra ID concepts, labs, attack paths, monitoring, hybrid identity, cloud identity & more."
+theme: "just-the-docs"
+
+url: "https://hareeshpalagiri.github.io/Active-Directory-to-Entra-ID"
+
+# Enable search
+just-the-docs:
+  search_enabled: true
+  toc:
+    enable: true
+    label: "On this page"
