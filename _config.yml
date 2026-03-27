@@ -2,21 +2,27 @@ title: "Active Directory to Entra ID — Learning Platform"
 description: "A complete structured learning platform."
 
 # ------------------------------------------------
-# Load Just-the-Docs theme correctly (GitHub Pages)
+# Correct GitHub Pages theme loading
 # ------------------------------------------------
 remote_theme: "just-the-docs/just-the-docs"
 
-# GitHub Pages URL
+# ------------------------------------------------
+# Site URL
+# ------------------------------------------------
 url: "https://hareeshpalagiri.github.io/Active-Directory-to-Entra-ID"
 
+# ------------------------------------------------
+# Just-the-Docs Settings
+# ------------------------------------------------
 just-the-docs:
   search_enabled: true
   search_tokenizer_separator: /[\s/]+/
 
-# Root-level navigation
+# ------------------------------------------------
+# Navigation Tree (ROOT LEVEL)
+# ------------------------------------------------
 nav_order: 1
 
-# Navigation Tree
 nav:
   - title: "Section 01 — IAM Core Concepts"
     url: /Section-01-IAM-Core/
@@ -58,15 +64,23 @@ nav:
     url: /Section-10-Labs-Scenarios/
     nav_order: 10
 
+# ------------------------------------------------
+# Markdown Engine
+# ------------------------------------------------
 markdown: kramdown
 kramdown:
   input: GFM
 
+# ------------------------------------------------
+# Plugins Supported by GitHub Pages
+# ------------------------------------------------
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
 
+# ------------------------------------------------
+# Exclusions
+# ------------------------------------------------
 exclude:
   - README.md
   - assets/*
-``
