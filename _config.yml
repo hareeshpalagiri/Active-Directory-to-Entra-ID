@@ -1,12 +1,61 @@
-title: "Active Directory to Entra ID"
-description: "Full learning platform with AD → Entra ID concepts, labs, attack paths, monitoring, hybrid identity, cloud identity & more."
+title: "Active Directory to Entra ID — Learning Platform"
+description: "A complete structured learning platform."
+
 theme: "just-the-docs"
 
 url: "https://hareeshpalagiri.github.io/Active-Directory-to-Entra-ID"
 
-# Enable search
 just-the-docs:
   search_enabled: true
-  toc:
-    enable: true
-    label: "On this page"
+  search_tokenizer_separator: /[\s/]+/
+
+nav_order: 1
+
+nav:
+  - title: "Section 01 — IAM Core Concepts"
+    url: /Section-01-IAM-Core/
+    nav_order: 1
+
+  - title: "Section 02 — Active Directory (On-Premise)"
+    url: /Section-02-Active-Directory/
+    nav_order: 2
+
+  - title: "Section 03 — AD Authentication Protocols"
+    url: /Section-03-AD-Auth-Protocols/
+    nav_order: 3
+
+  - title: "Section 04 — AD Security"
+    url: /Section-04-AD-Security/
+    nav_order: 4
+
+  - title: "Section 05 — AD Attacks"
+    url: /Section-05-AD-Attacks/
+    nav_order: 5
+
+  - title: "Section 06 — Hybrid Identity & Entra Connect"
+    url: /Section-06-Hybrid-Identity/
+    nav_order: 6
+
+  - title: "Section 07 — Microsoft Entra ID Deep Dive"
+    url: /Section-07-Entra-ID/
+    nav_order: 7
+
+  - title: "Section 08 — Entra ID Security & Conditional Access"
+    url: /Section-08-Conditional-Access/
+    nav_order: 8
+
+  - title: "Section 09 — Microsoft Defender for Identity"
+    url: /Section-09-Defender-for-Identity/
+    nav_order: 9
+
+  - title: "Section 10 — Labs & Real-World Scenarios"
+    url: /Section-10-Labs-Scenarios/
+    nav_order: 10
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
