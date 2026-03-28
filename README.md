@@ -1,4 +1,4 @@
-# README
+# Identity and Access Management
 
 ## 🏢 Active Directory to Microsoft Entra ID
 
@@ -10,7 +10,7 @@ monitoring, and real-world labs. Written in simple English with real examples.
 
 ***
 
-### 🔎 What is this repository about?
+### 🔎 What is this about?
 
 Identity is the new security perimeter. As organizations move from **Active Directory** to **Hybrid Identity** and finally to **Microsoft Entra ID**, attackers increasingly target identity systems.\
 This repo provides:

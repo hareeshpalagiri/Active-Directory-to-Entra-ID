@@ -1,6 +1,6 @@
 # Table of contents
 
-* [README](README.md)
+* [Identity and Access Management](README.md)
 * [📘 AD → Entra ID Guide](_sidebar.md)
 * [Section 01 — IAM Core Concepts](Section-01-IAM-Core/README.md)
   * [01 — Introduction to Identity and Access Management (IAM)](Section-01-IAM-Core/01-Introduction-to-IAM.md)
